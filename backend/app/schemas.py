@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import date
 from typing import List, Optional
 
@@ -36,7 +36,7 @@ class FoodRead(FoodBase):
 
 # Log schemas
 class FoodLogBase(BaseModel):
-    date: Optional[date] = None
+    log_date: date = Field(default_factory=date.today)
     servings: float = 1.0
 
 class FoodLogCreate(FoodLogBase):
@@ -52,7 +52,7 @@ class FoodLogRead(FoodLogBase):
 
 
 class WeightLogBase(BaseModel):
-    date: Optional[date] = None
+    log_date: date = Field(default_factory=date.today)
     weight: float
 
 class WeightLogCreate(WeightLogBase):

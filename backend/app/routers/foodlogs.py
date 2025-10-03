@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from .. import crud, schemas, models
 from ..database import get_db
-from ..core import security
+from ..core.security import get_current_user
 
 router = APIRouter(
     prefix="/foodlogs",
@@ -14,8 +14,9 @@ router = APIRouter(
 def create_food_log(
     log: schemas.FoodLogCreate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(security.get_current_user),
+    current_user: models.User = Depends(get_current_user),
 ):
+    # check food exists
     db_food = db.query(models.Food).filter(models.Food.id == log.food_id).first()
     if not db_food:
         raise HTTPException(status_code=404, detail="Food not found")
@@ -26,7 +27,7 @@ def read_food_logs(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(security.get_current_user),
+    current_user: models.User = Depends(get_current_user),
 ):
     return (
         db.query(models.FoodLog)
