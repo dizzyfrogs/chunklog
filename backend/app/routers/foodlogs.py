@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import date
 from .. import crud, schemas, models
 from ..database import get_db
 from ..core.security import get_current_user
@@ -24,15 +25,10 @@ def create_food_log(
 
 @router.get("/", response_model=List[schemas.FoodLogRead])
 def read_food_logs(
+    log_date: date = date.today(),
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    return (
-        db.query(models.FoodLog)
-        .filter(models.FoodLog.user_id == current_user.id)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    return crud.get_food_logs(db, user_id=current_user.id, log_date=log_date, skip=skip, limit=limit)

@@ -3,19 +3,18 @@ import { loginUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
-  const [email, setEmail] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await loginUser(email, password);
+      const response = await loginUser(usernameOrEmail, password);
       login(response.data.access_token);
-      alert('Login successful!');
     } catch (error) {
       console.error('Login failed:', error);
-      alert('Login failed. Check your email or password.');
+      alert('Login failed. Check your credentials.');
     }
   };
 
@@ -23,13 +22,12 @@ function Login() {
     <div>
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        {/*form inputs*/}
         <div>
-          <label>Email:</label>
+          <label>Username or Email:</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={usernameOrEmail}
+            onChange={(e) => setUsernameOrEmail(e.target.value)}
             required
           />
         </div>

@@ -1,0 +1,17 @@
+.fab-container {
+  bottom: 75px !important;
+}
+
+.fab-container .fab-main {
+  background-color: var(--primary) !important;
+  color: var(--background) !important;
+  width: 50px !important;
+  height: 50px !important;
+  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.3) !important;
+}
+
+.fab-container .fab-action {
+  background-color: var(--surface) !important;
+  color: var(--primary) !important;
+  border: 1px solid var(--primary);
+}

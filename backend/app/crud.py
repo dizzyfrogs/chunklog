@@ -49,7 +49,7 @@ def get_foods(db: Session, user_id: int, skip: int = 0, limit: int = 100):
 # --- FoodLog CRUD ---
 def log_food(db: Session, log: schemas.FoodLogCreate, user_id: int):
     db_log = models.FoodLog(
-        date=log.log_date or date.today(),
+        date=log.log_date,
         servings=log.servings,
         food_id=log.food_id,
         user_id=user_id
@@ -60,20 +60,19 @@ def log_food(db: Session, log: schemas.FoodLogCreate, user_id: int):
     return db_log
 
 
-def get_food_logs(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+def get_food_logs(db: Session, user_id: int, log_date: date, skip: int = 0, limit: int = 100):
     return (
         db.query(models.FoodLog)
-        .filter(models.FoodLog.user_id == user_id)
+        .filter(models.FoodLog.user_id == user_id, models.FoodLog.date == log_date)
         .offset(skip)
         .limit(limit)
         .all()
     )
 
-
 # --- WeightLog CRUD ---
 def log_weight(db: Session, log: schemas.WeightLogCreate, user_id: int):
     db_log = models.WeightLog(
-        date=log.log_date or date.today(),
+        date=log.log_date,
         weight=log.weight,
         user_id=user_id
     )

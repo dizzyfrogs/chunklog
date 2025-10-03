@@ -3,7 +3,7 @@ import { calculateGoal } from '../services/api';
 
 function GoalForm({ onGoalSet }) {
   const [goalType, setGoalType] = useState('maintenance');
-  const [currentWeight, setCurrentWeight] = useState(''); 
+  const [currentWeight, setCurrentWeight] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();

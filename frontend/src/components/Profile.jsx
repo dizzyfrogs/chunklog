@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getCurrentUser, updateUserProfile } from '../services/api';
 
-function Profile() {
+function Profile({ onProfileUpdate }) {
   const [formData, setFormData] = useState({
     date_of_birth: '',
     gender: 'male',
@@ -42,6 +42,9 @@ function Profile() {
       };
       await updateUserProfile(dataToSend);
       alert('Profile updated successfully!');
+      if (onProfileUpdate) {
+        onProfileUpdate();
+      }
     } catch (error) {
       console.error('Failed to update profile', error);
       alert('Failed to update profile.');

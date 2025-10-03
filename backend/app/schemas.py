@@ -57,6 +57,7 @@ class FoodLogRead(FoodLogBase):
     id: int
     user_id: int
     food_id: int
+    food: FoodRead
 
     class Config:
         orm_mode = True
