@@ -11,9 +11,9 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
 
-    foods = relationship("Food", back_populates="owner")
-    food_logs = relationship("FoodLog", back_populates="user")
-    weight_logs = relationship("WeightLog", back_populates="user")
+    foods = relationship("Food", back_populates="owner", cascade="all, delete-orphan")
+    food_logs = relationship("FoodLog", back_populates="user", cascade="all, delete-orphan")
+    weight_logs = relationship("WeightLog", back_populates="user", cascade="all, delete-orphan")
 
 class Food(Base):
     __tablename__ = "foods"
@@ -28,7 +28,7 @@ class Food(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="foods")
 
-    logs = relationship("FoodLog", back_populates="food")
+    logs = relationship("FoodLog", back_populates="food", cascade="all, delete-orphan")
 
 
 class FoodLog(Base):
