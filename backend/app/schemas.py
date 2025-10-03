@@ -1,3 +1,4 @@
+from backend.app.models import GoalType
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date
 from typing import List, Optional
@@ -60,6 +61,21 @@ class WeightLogCreate(WeightLogBase):
 
 class WeightLogRead(WeightLogBase):
     id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
+
+# Goal schemas
+class GoalBase(BaseModel):
+    goal_type: GoalType
+    target_weight: Optional[float] = None
+    target_calories: Optional[float] = None
+
+class GoalCreate(GoalBase):
+    pass
+
+class GoalRead(GoalBase):
     user_id: int
 
     class Config:

@@ -91,3 +91,21 @@ def get_weight_logs(db: Session, user_id: int, skip: int = 0, limit: int = 100):
         .limit(limit)
         .all()
     )
+
+# --- Goal CRUD ---
+def create_or_update_user_goal(db: Session, goal: schemas.GoalCreate, user_id: int):
+    db_goal = db.query(models.Goal).filter(models.Goal.user_id == user_id).first()
+    if db_goal:
+        # existing goal
+        for key, value in goal.dict().items():
+            setattr(db_goal, key, value)
+    else:
+        # new goal
+        db_goal = models.Goal(**goal.dict(), user_id=user_id)
+        db.add(db_goal)
+    db.commit()
+    db.refresh(db_goal)
+    return db_goal
+
+def get_user_goal(db: Session, user_id: int):
+    return db.query(models.Goal).filter(models.Goal.user_id == user_id).first()

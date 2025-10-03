@@ -1,7 +1,14 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, DateTime
-from sqlalchemy.orm import relationship
-from .database import Base
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, DateTime, Enum
+from sqlalchemy.orm import relationship, declarative_base
 import datetime
+import enum
+
+Base = declarative_base()
+
+class GoalType(enum.Enum):
+    WEIGHT_LOSS = "weight_loss"
+    MAINTENANCE = "maintenance"
+    MUSCLE_GROWTH = "muscle_growth"
 
 class User(Base):
     __tablename__ = "users"
@@ -14,6 +21,8 @@ class User(Base):
     foods = relationship("Food", back_populates="owner", cascade="all, delete-orphan")
     food_logs = relationship("FoodLog", back_populates="user", cascade="all, delete-orphan")
     weight_logs = relationship("WeightLog", back_populates="user", cascade="all, delete-orphan")
+
+    goal = relationship("Goal", uselist=False, back_populates="user", cascade="all, delete-orphan")
 
 class Food(Base):
     __tablename__ = "foods"
@@ -54,3 +63,13 @@ class WeightLog(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="weight_logs")
+
+class Goal(Base):
+    __tablename__ = "goals"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    goal_type = Column(Enum(GoalType), nullable=False)
+    target_weight = Column(Float, nullable=True)
+    target_calories = Column(Float, nullable=True)
+
+    user = relationship("User", back_populates="goal")
