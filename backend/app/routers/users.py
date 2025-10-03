@@ -10,9 +10,16 @@ router = APIRouter(
 
 @router.post("/", response_model=schemas.UserRead)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Check email
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    # Check username
+    db_user = db.query(crud.models.User).filter(crud.models.User.username == user.username).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already taken")
+
     return crud.create_user(db=db, user=user)
 
 @router.get("/{user_id}", response_model=schemas.UserRead)
