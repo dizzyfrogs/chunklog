@@ -29,3 +29,18 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 @router.get("/me", response_model=schemas.UserRead)
 def read_current_user(current_user: models.User = Depends(security.get_current_user)):
     return current_user
+
+@router.put("/me", response_model=schemas.UserRead)
+def update_current_user(
+    user_update: schemas.UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(security.get_current_user),
+):
+    user_data = user_update.dict(exclude_unset=True)
+    for key, value in user_data.items():
+        setattr(current_user, key, value)
+    
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return current_user

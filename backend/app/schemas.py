@@ -1,4 +1,4 @@
-from backend.app.models import GoalType
+from backend.app.models import ActivityLevel, Gender, GoalType
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date
 from typing import List, Optional
@@ -11,8 +11,18 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class UserUpdate(BaseModel):
+    date_of_birth: Optional[date] = None
+    gender: Optional[Gender] = None
+    height_cm: Optional[float] = None
+    activity_level: Optional[ActivityLevel] = None
+
 class UserRead(UserBase):
     id: int
+    date_of_birth: Optional[date] = None
+    gender: Optional[Gender] = None
+    height_cm: Optional[float] = None
+    activity_level: Optional[ActivityLevel] = None
 
     class Config:
         orm_mode = True
@@ -71,6 +81,10 @@ class GoalBase(BaseModel):
     goal_type: GoalType
     target_weight: Optional[float] = None
     target_calories: Optional[float] = None
+
+class GoalCalculationRequest(BaseModel):
+    goal_type: GoalType
+    current_weight_kg: float
 
 class GoalCreate(GoalBase):
     pass
