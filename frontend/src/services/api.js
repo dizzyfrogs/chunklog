@@ -61,5 +61,9 @@ export const updateUserProfile = (profileData) => {
   return api.put('/users/me', profileData);
 };
 
+export const signupUser = (userData) => {
+  return api.post('/users/', userData);
+};
+
 
 export default api;
