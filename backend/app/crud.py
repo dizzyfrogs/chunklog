@@ -3,12 +3,11 @@ from . import models, schemas
 from datetime import date
 
 # --- User CRUD ---
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"  # temporary!!!!
+def create_user(db: Session, user: schemas.UserCreate, hashed_password: str):
     db_user = models.User(
         username=user.username,
         email=user.email,
-        hashed_password=fake_hashed_password
+        hashed_password=hashed_password
     )
     db.add(db_user)
     db.commit()

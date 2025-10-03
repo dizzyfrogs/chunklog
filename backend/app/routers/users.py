@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .. import crud, schemas
+from .. import crud, schemas, models
 from ..database import get_db
+from ..core import security
 
 router = APIRouter(
     prefix="/users",
@@ -16,15 +17,15 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     # Check username
-    db_user = db.query(crud.models.User).filter(crud.models.User.username == user.username).first()
+    db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already taken")
 
-    return crud.create_user(db=db, user=user)
+    # Hash password before saving
+    hashed_password = security.get_password_hash(user.password)
 
-@router.get("/{user_id}", response_model=schemas.UserRead)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+    return crud.create_user(db=db, user=user, hashed_password=hashed_password)
+
+@router.get("/me", response_model=schemas.UserRead)
+def read_current_user(current_user: models.User = Depends(security.get_current_user)):
+    return current_user
