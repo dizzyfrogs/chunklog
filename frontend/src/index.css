@@ -13,16 +13,15 @@
   box-sizing: border-box;
 }
 
-html, body {
-  overscroll-behavior: none;
-  position: fixed;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-}
-
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--background);
   color: var(--text-primary);
+  overscroll-behavior-y: contain;
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 15px;
+  }
 }

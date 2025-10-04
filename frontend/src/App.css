@@ -1,7 +1,7 @@
 .App {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   padding: 2rem;
 }
@@ -13,6 +13,9 @@
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
 }
 
 h2, h3, h4 {
@@ -84,7 +87,7 @@ button:hover {
 
 @media (max-width: 600px) {
   .App {
-    padding: 1rem;
+    padding: 0;
   }
 
   .App-container {
@@ -92,9 +95,7 @@ button:hover {
     border-radius: 0;
     box-shadow: none;
     border: none;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
+    min-height: 100vh;
+    max-height: 100vh;
+ }
 }
