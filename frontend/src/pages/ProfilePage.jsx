@@ -1,17 +1,28 @@
 import React from 'react';
 import Profile from '../components/Profile';
+import PageHeader from '../components/PageHeader';
 import { useAuth } from '../context/AuthContext';
+import { FiLogOut } from 'react-icons/fi';
 
-function ProfilePage() {
+function ProfilePage({ onProfileUpdate }) {
   const { logout, checkProfileCompletion } = useAuth();
+  
+  const handleProfileUpdated = () => {
+    checkProfileCompletion();
+    if (onProfileUpdate) {
+      onProfileUpdate(); // trigger the app-wide refresh
+    }
+  };
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Your Profile</h2>
-        <button onClick={logout} className="link-button" style={{color: 'var(--text-secondary)'}}>Logout</button>
-      </div>
+      <PageHeader title="Your Profile">
+        <button onClick={logout} className="link-button" style={{color: 'var(--text-secondary)', fontSize: '1.5rem'}}>
+          <FiLogOut />
+        </button>
+      </PageHeader>
       <hr />
-      <Profile onProfileUpdate={checkProfileCompletion} />
+      <Profile onProfileUpdate={handleProfileUpdated} />
     </div>
   );
 }

@@ -51,6 +51,10 @@ export const calculateGoal = (goalData) => {
   return api.post('/goals/calculate', goalData);
 };
 
+export const setManualGoal = (goalData) => {
+  return api.post('/goals/', goalData);
+};
+
 // --- Weight Log Functions ---
 export const getWeightLogs = () => {
   return api.get('/weightlogs/');

@@ -35,20 +35,20 @@ def calculate_and_set_goal(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(security.get_current_user),
 ):
-    #Validation
     if not all([current_user.date_of_birth, current_user.gender, current_user.height_cm]):
         raise HTTPException(status_code=400, detail="User profile is incomplete. Please provide date of birth, gender, and height.")
-
+    latest_weight_log = db.query(models.WeightLog).filter(models.WeightLog.user_id == current_user.id).order_by(models.WeightLog.date.desc()).first()
+    if not latest_weight_log:
+        raise HTTPException(status_code=400, detail="No weight logged. Please log your weight at least once.")
+    
+    weight_kg = latest_weight_log.weight
     age = (date.today() - current_user.date_of_birth).days // 365
-    weight_kg = calculation_input.current_weight_kg
 
-    # BMR calculation (Mifflin-St Jeor)
     if current_user.gender.value == "male":
         bmr = (10 * weight_kg) + (6.25 * current_user.height_cm) - (5 * age) + 5
     else: # FEMALE
         bmr = (10 * weight_kg) + (6.25 * current_user.height_cm) - (5 * age) - 161
 
-    # TDEE
     activity_multipliers = {
         models.ActivityLevel.SEDENTARY: 1.2,
         models.ActivityLevel.LIGHT: 1.375,
@@ -65,10 +65,17 @@ def calculate_and_set_goal(
         target_calories = tdee + 300
     else: # MAINTENANCE
         target_calories = tdee
+        
+    target_carbs = (target_calories * 0.40) / 4
+    target_protein = (target_calories * 0.30) / 4
+    target_fat = (target_calories * 0.30) / 9
 
     goal_to_create = schemas.GoalCreate(
         goal_type=calculation_input.goal_type,
-        target_calories=round(target_calories)
+        target_calories=round(target_calories),
+        target_carbs=round(target_carbs),
+        target_protein=round(target_protein),
+        target_fat=round(target_fat)
     )
     
     return crud.create_or_update_user_goal(db, goal_to_create, user_id=current_user.id)

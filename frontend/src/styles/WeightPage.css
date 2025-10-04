@@ -1,0 +1,55 @@
+.weight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.latest-weight-card {
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.latest-weight-card .label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.latest-weight-card .value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.latest-weight-card .unit-toggle {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.log-weight-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  background-image: linear-gradient(45deg, var(--primary), #4ab5d3);
+  border: none;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--background);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.history-item .date {
+  color: var(--text-secondary);
+}

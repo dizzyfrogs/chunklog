@@ -3,35 +3,73 @@ import Modal from '../components/Modal';
 import LogMealModal from '../components/LogMealModal';
 import FoodForm from '../components/FoodForm';
 import { getFoodLogs } from '../services/api';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import PageHeader from '../components/PageHeader';
+import '../styles/FoodPage.css';
+
+const formatTime = (unixTimestamp) => {
+    const date = new Date(unixTimestamp * 1000);
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
+const groupMeals = (logs) => {
+    const groups = { Morning: [], Afternoon: [], Evening: [] };
+    logs.forEach(log => {
+        const hour = new Date(log.timestamp * 1000).getHours();
+        if (hour < 12) {
+            groups.Morning.push(log);
+        } else if (hour < 17) {
+            groups.Afternoon.push(log);
+        } else {
+            groups.Evening.push(log);
+        }
+    });
+    return groups;
+};
 
 function FoodPage() {
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [dailyLog, setDailyLog] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const getTodayString = () => new Date().toISOString().split('T')[0];
+  const toYYYYMMDD = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+  }
 
-  const fetchTodaysLog = async () => {
+  const fetchLogForDate = async (date) => {
     setLoading(true);
     try {
-      const today = getTodayString();
-      const response = await getFoodLogs(today);
+      const dateString = toYYYYMMDD(date);
+      const response = await getFoodLogs(dateString);
       setDailyLog(response.data);
     } catch (error) {
-      console.error("Failed to fetch today's log", error);
+      console.error(`Failed to fetch log for ${toYYYYMMDD(date)}`, error);
+      setDailyLog([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTodaysLog();
-  }, []);
+    fetchLogForDate(currentDate);
+  }, [currentDate]);
 
   const handleMealLogged = () => {
     setIsLogModalOpen(false);
-    fetchTodaysLog();
+    fetchLogForDate(currentDate);
+  };
+
+  const goToPreviousDay = () => {
+    setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 1)));
+  };
+
+  const goToNextDay = () => {
+    setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 1)));
   };
 
   const totalCalories = dailyLog.reduce((sum, item) => {
@@ -39,34 +77,61 @@ function FoodPage() {
     return sum + itemCalories;
   }, 0);
 
+  const mealGroups = groupMeals(dailyLog);
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Today's Log</h2>
-        <div>
-          <button onClick={() => setIsLogModalOpen(true)} style={{marginRight: '1rem'}}>Log Meal</button>
-        </div>
-      </div>
+      <PageHeader title="Food Log" />
       <hr />
-      
-      <div>
-        <h3>Total Calories: {Math.round(totalCalories)}</h3>
-        {loading ? <p>Loading log...</p> : (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {dailyLog.map(log => (
-              <li key={log.id} style={{ background: 'var(--background)', padding: '0.75rem', borderRadius: '4px', marginBottom: '0.5rem' }}>
-                <strong>{log.food.name}</strong> ({log.servings} serving{log.servings > 1 ? 's' : ''})
-                <span style={{ float: 'right' }}>{Math.round(log.food.calories * log.servings)} kcal</span>
-              </li>
-            ))}
-          </ul>
-        )}
+
+      <div className="date-navigator">
+        <button onClick={goToPreviousDay} className="date-nav-btn"><FiChevronLeft /></button>
+        <span className="date-display">{currentDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}</span>
+        <button onClick={goToNextDay} className="date-nav-btn"><FiChevronRight /></button>
       </div>
+
+      <div className="calorie-summary-card">
+        <div className="label">Total Calories</div>
+        <div className="value">{Math.round(totalCalories)}</div>
+      </div>
+      
+      <div className="log-meal-action">
+          <button onClick={() => setIsLogModalOpen(true)}>Log Meal</button>
+      </div>
+
+      {loading ? <p>Loading log...</p> : (
+        <div>
+          {Object.entries(mealGroups).map(([groupName, logs]) => (
+            logs.length > 0 && (
+              <div key={groupName} className="meal-group">
+                <div className="meal-group-header">{groupName}</div>
+                {logs.map(log => (
+                  <div key={log.id} className="log-item">
+                    <div className="log-item-details">
+                      <div className="name">{log.food.name}</div>
+                      <div className="info">
+                        {log.servings} serving{log.servings > 1 ? 's' : ''} &bull; {formatTime(log.timestamp)}
+                      </div>
+                    </div>
+                    <div className="log-item-calories">
+                      {Math.round(log.food.calories * log.servings)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          ))}
+          {!loading && dailyLog.length === 0 && (
+            <p style={{textAlign: 'center', color: 'var(--text-secondary)', marginTop: '2rem'}}>
+                No meals logged for this day.
+            </p>
+          )}
+        </div>
+      )}
 
       <Modal isOpen={isLogModalOpen} onClose={() => setIsLogModalOpen(false)} title="Log a Meal">
         <LogMealModal onMealLogged={handleMealLogged} />
       </Modal>
-
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add to Food Library">
         <FoodForm onFoodAdded={() => setIsAddModalOpen(false)} />
       </Modal>

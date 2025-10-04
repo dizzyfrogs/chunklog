@@ -29,6 +29,7 @@ function App() {
   };
 
   const renderPage = () => {
+    // Pass the refresh key to all pages that display dynamic data
     switch (activePage) {
       case 'dashboard':
         return <DashboardPage key={refreshKey} />;
@@ -37,7 +38,8 @@ function App() {
       case 'food':
         return <FoodPage key={refreshKey} />;
       case 'profile':
-        return <ProfilePage />;
+        // Profile page also needs to trigger a refresh for the dashboard
+        return <ProfilePage onProfileUpdate={handleDataRefresh} />;
       default:
         return <DashboardPage key={refreshKey} />;
     }
@@ -45,12 +47,12 @@ function App() {
 
   const handleWeightLogged = () => {
     setIsWeightModalOpen(false);
-    handleDataRefresh();
+    handleDataRefresh(); // Refresh the current page
   };
   
   const handleMealLogged = () => {
     setIsMealModalOpen(false);
-    handleDataRefresh();
+    handleDataRefresh(); // Refresh the current page
   };
 
   const appContainerStyle = { paddingBottom: '80px' };
@@ -64,15 +66,18 @@ function App() {
               <h2>Complete Your Profile</h2>
               <p>Please fill out your profile to continue.</p>
               <hr/>
-              <ProfilePage />
+              {/* Also pass the refresh function here for the initial setup */}
+              <ProfilePage onProfileUpdate={handleDataRefresh} />
             </>
           ) : (
             <>
               {renderPage()}
+              
               <BottomNav
                 activePage={activePage}
                 setActivePage={setActivePage}
               />
+
               {activePage === 'dashboard' && (
                 <Fab
                   style={{ bottom: 80, right: 24 }}
@@ -89,6 +94,7 @@ function App() {
                   </Action>
                 </Fab>
               )}
+
               <Modal isOpen={isWeightModalOpen} onClose={() => setIsWeightModalOpen(false)} title="Log Your Weight">
                 <WeightLog onWeightLogged={handleWeightLogged} />
               </Modal>

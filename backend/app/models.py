@@ -61,6 +61,7 @@ class FoodLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     date = Column(Date, default=datetime.date.today)
+    timestamp = Column(Integer)
     servings = Column(Float, default=1.0)
 
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -75,6 +76,7 @@ class WeightLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     date = Column(Date, default=datetime.date.today)
+    timestamp = Column(Integer)
     weight = Column(Float, nullable=False)
 
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -87,5 +89,8 @@ class Goal(Base):
     goal_type = Column(Enum(GoalType), nullable=False)
     target_weight = Column(Float, nullable=True)
     target_calories = Column(Float, nullable=True)
+    target_protein = Column(Float, nullable=True)
+    target_carbs = Column(Float, nullable=True)
+    target_fat = Column(Float, nullable=True)
 
     user = relationship("User", back_populates="goal")

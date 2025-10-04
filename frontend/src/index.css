@@ -20,6 +20,27 @@ body {
   overscroll-behavior-y: contain;
 }
 
+/* --- ADD THESE SCROLLBAR STYLES --- */
+/* Works on Chrome, Edge, and Safari */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 20px;
+  border: 3px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
+}
+/* --- END OF NEW STYLES --- */
+
 @media (max-width: 600px) {
   html {
     font-size: 15px;

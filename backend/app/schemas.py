@@ -1,6 +1,6 @@
 from backend.app.models import ActivityLevel, Gender, GoalType
 from pydantic import BaseModel, EmailStr, Field
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional
 
 # User schemas
@@ -58,6 +58,7 @@ class FoodLogRead(FoodLogBase):
     user_id: int
     food_id: int
     food: FoodRead
+    timestamp: int
 
     class Config:
         orm_mode = True
@@ -73,19 +74,22 @@ class WeightLogCreate(WeightLogBase):
 class WeightLogRead(WeightLogBase):
     id: int
     user_id: int
+    timestamp: int
 
     class Config:
         orm_mode = True
 
 # Goal schemas
 class GoalBase(BaseModel):
-    goal_type: GoalType
+    goal_type: Optional[GoalType] = None
     target_weight: Optional[float] = None
     target_calories: Optional[float] = None
+    target_protein: Optional[float] = None
+    target_carbs: Optional[float] = None
+    target_fat: Optional[float] = None
 
 class GoalCalculationRequest(BaseModel):
     goal_type: GoalType
-    current_weight_kg: float
 
 class GoalCreate(GoalBase):
     pass

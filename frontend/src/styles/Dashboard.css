@@ -3,57 +3,137 @@
   margin-bottom: 2rem;
 }
 
-.chunk-budget {
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
+.budget-title {
   text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.chunk-budget h3 {
   color: var(--text-secondary);
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
 
-.chunk-budget .calories {
+.chunk-budget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.update-goal-icon-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.update-goal-icon-btn:hover {
+  background-color: var(--background);
   color: var(--primary);
-  font-size: 3rem;
+}
+
+.progress-circle-container {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.circle-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.circle-text .calorie-number {
+  color: var(--primary);
+  font-size: 36px;
   font-weight: 700;
   line-height: 1;
 }
 
-.update-goal-btn {
+.circle-text .remaining-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   width: 100%;
-  background-color: var(--surface);
+  max-width: 250px;
+}
+
+.detail-item .icon {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.detail-item .text-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+}
+
+.detail-item span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.detail-item strong {
+  font-size: 1.2rem;
   color: var(--primary);
-  border: 1px solid var(--primary);
 }
 
-.progress-bar-container {
+.macro-details {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.macro-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.macro-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.macro-progress-container {
+  width: 50px;
+  height: 5px;
   background-color: var(--background);
-  border-radius: 8px;
+  border-radius: 5px;
   overflow: hidden;
-  margin-top: 1rem;
-  height: 12px;
 }
 
-.progress-bar {
+.macro-progress-bar {
   height: 100%;
   width: 0%;
-  background-color: #2e7d32;
-  transition: width 0.5s ease-in-out, background-color 0.5s ease;
+  transition: width 0.5s ease-in-out;
 }
 
-.progress-bar.over-budget {
-  background-color: #fdd835;
-}
-
-.consumed-text {
-  text-align: center;
-  color: var(--text-secondary);
-  margin-top: 0.5rem;
+.macro-values {
   font-size: 0.9rem;
 }

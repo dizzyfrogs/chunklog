@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 from datetime import date
+import time
 
 # --- User CRUD ---
 def create_user(db: Session, user: schemas.UserCreate, hashed_password: str):
@@ -52,7 +53,8 @@ def log_food(db: Session, log: schemas.FoodLogCreate, user_id: int):
         date=log.log_date,
         servings=log.servings,
         food_id=log.food_id,
-        user_id=user_id
+        user_id=user_id,
+        timestamp=int(time.time())
     )
     db.add(db_log)
     db.commit()
@@ -74,7 +76,8 @@ def log_weight(db: Session, log: schemas.WeightLogCreate, user_id: int):
     db_log = models.WeightLog(
         date=log.log_date,
         weight=log.weight,
-        user_id=user_id
+        user_id=user_id,
+        timestamp=int(time.time())
     )
     db.add(db_log)
     db.commit()
@@ -86,6 +89,7 @@ def get_weight_logs(db: Session, user_id: int, skip: int = 0, limit: int = 100):
     return (
         db.query(models.WeightLog)
         .filter(models.WeightLog.user_id == user_id)
+        .order_by(models.WeightLog.date.desc(), models.WeightLog.timestamp.desc())
         .offset(skip)
         .limit(limit)
         .all()
