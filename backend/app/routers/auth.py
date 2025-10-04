@@ -12,10 +12,12 @@ router = APIRouter(
 
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    login_identifier = form_data.username.lower()
+
     # Try to find by email first, then username
-    user = crud.get_user_by_email(db, form_data.username)
+    user = crud.get_user_by_email(db, login_identifier)
     if not user:
-        user = db.query(models.User).filter(models.User.username == form_data.username).first()
+        user = db.query(models.User).filter(models.User.username == login_identifier).first()
 
     if not user or not security.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")

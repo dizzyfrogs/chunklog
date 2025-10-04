@@ -17,7 +17,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     # Check username
-    db_user = db.query(models.User).filter(models.User.username == user.username).first()
+    db_user = db.query(models.User).filter(models.User.username == user.username.lower()).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already taken")
 
