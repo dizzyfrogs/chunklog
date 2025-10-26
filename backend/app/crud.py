@@ -71,6 +71,18 @@ def get_food_logs(db: Session, user_id: int, log_date: date, skip: int = 0, limi
         .all()
     )
 
+
+def delete_food_log(db: Session, log_id: int, user_id: int):
+    db_log = db.query(models.FoodLog).filter(
+        models.FoodLog.id == log_id,
+        models.FoodLog.user_id == user_id
+    ).first()
+    if db_log:
+        db.delete(db_log)
+        db.commit()
+        return True
+    return False
+
 # --- WeightLog CRUD ---
 def log_weight(db: Session, log: schemas.WeightLogCreate, user_id: int):
     db_log = models.WeightLog(
@@ -94,6 +106,18 @@ def get_weight_logs(db: Session, user_id: int, skip: int = 0, limit: int = 100):
         .limit(limit)
         .all()
     )
+
+
+def delete_weight_log(db: Session, log_id: int, user_id: int):
+    db_log = db.query(models.WeightLog).filter(
+        models.WeightLog.id == log_id,
+        models.WeightLog.user_id == user_id
+    ).first()
+    if db_log:
+        db.delete(db_log)
+        db.commit()
+        return True
+    return False
 
 # --- Goal CRUD ---
 def create_or_update_user_goal(db: Session, goal: schemas.GoalCreate, user_id: int):

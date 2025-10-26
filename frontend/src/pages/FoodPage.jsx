@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import LogMealModal from '../components/LogMealModal';
 import FoodForm from '../components/FoodForm';
-import { getFoodLogs } from '../services/api';
+import { getFoodLogs, deleteFoodLog } from '../services/api';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import PageHeader from '../components/PageHeader';
 import '../styles/FoodPage.css';
@@ -64,6 +64,18 @@ function FoodPage() {
     fetchLogForDate(currentDate);
   };
 
+  const handleDeleteLog = async (logId) => {
+    if (window.confirm('Are you sure you want to delete this entry?')) {
+      try {
+        await deleteFoodLog(logId);
+        fetchLogForDate(currentDate);
+      } catch (error) {
+        console.error('Failed to delete food log', error);
+        alert('Failed to delete entry.');
+      }
+    }
+  };
+
   const goToPreviousDay = () => {
     setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 1)));
   };
@@ -113,8 +125,24 @@ function FoodPage() {
                         {log.servings} serving{log.servings > 1 ? 's' : ''} &bull; {formatTime(log.timestamp)}
                       </div>
                     </div>
-                    <div className="log-item-calories">
-                      {Math.round(log.food.calories * log.servings)}
+                    <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                      <div className="log-item-calories">
+                        {Math.round(log.food.calories * log.servings)}
+                      </div>
+                      <button 
+                        onClick={() => handleDeleteLog(log.id)}
+                        style={{ 
+                          background: '#dc3545', 
+                          color: 'white', 
+                          border: 'none', 
+                          padding: '0.25rem 0.5rem', 
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.9rem'
+                        }}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -130,7 +158,7 @@ function FoodPage() {
       )}
 
       <Modal isOpen={isLogModalOpen} onClose={() => setIsLogModalOpen(false)} title="Log a Meal">
-        <LogMealModal onMealLogged={handleMealLogged} />
+        <LogMealModal onMealLogged={handleMealLogged} selectedDate={currentDate} />
       </Modal>
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add to Food Library">
         <FoodForm onFoodAdded={() => setIsAddModalOpen(false)} />

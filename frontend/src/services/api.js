@@ -64,6 +64,10 @@ export const logWeight = (weightData) => {
   return api.post('/weightlogs/', weightData);
 };
 
+export const deleteWeightLog = (logId) => {
+  return api.delete(`/weightlogs/${logId}`);
+};
+
 // --- Food Functions ---
 export const getFoods = () => {
     return api.get('/foods/');
@@ -80,6 +84,10 @@ export const getFoodLogs = (log_date) => {
 
 export const logFood = (foodLogData) => {
   return api.post('/foodlogs/', foodLogData);
+};
+
+export const deleteFoodLog = (logId) => {
+  return api.delete(`/foodlogs/${logId}`);
 };
 
 export default api;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
-import { getWeightLogs } from '../services/api';
+import { getWeightLogs, deleteWeightLog } from '../services/api';
 import Modal from '../components/Modal';
 import WeightLog from '../components/WeightLog';
 import UnitSwitch from '../components/UnitSwitch';
@@ -43,6 +43,18 @@ function WeightPage() {
   const handleWeightLogged = () => {
     setIsModalOpen(false);
     fetchLogs();
+  }
+
+  const handleDeleteLog = async (logId) => {
+    if (window.confirm('Are you sure you want to delete this weight entry?')) {
+      try {
+        await deleteWeightLog(logId);
+        fetchLogs();
+      } catch (error) {
+        console.error('Failed to delete weight log', error);
+        alert('Failed to delete entry.');
+      }
+    }
   }
 
   const latestWeightKg = logs[0]?.weight || 0;
@@ -101,12 +113,28 @@ function WeightPage() {
       {showHistory && (
         <div style={{ marginTop: '1rem' }}>
           {logs.map((log) => (
-            <div key={log.id} className="history-item">
+            <div key={log.id} className="history-item" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
               <div style={{display: 'flex', flexDirection: 'column'}}>
                 <span className="date">{parseLocalDate(log.log_date).toLocaleDateString()}</span>
                 <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>{formatTime(log.timestamp)}</span>
               </div>
-              <strong>{unit === 'lbs' ? (log.weight * 2.20462).toFixed(1) : log.weight.toFixed(1)} {unit}</strong>
+              <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                <strong>{unit === 'lbs' ? (log.weight * 2.20462).toFixed(1) : log.weight.toFixed(1)} {unit}</strong>
+                <button 
+                  onClick={() => handleDeleteLog(log.id)}
+                  style={{ 
+                    background: '#dc3545', 
+                    color: 'white', 
+                    border: 'none', 
+                    padding: '0.25rem 0.75rem', 
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>

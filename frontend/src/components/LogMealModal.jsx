@@ -3,7 +3,7 @@ import { getFoods, logFood } from '../services/api';
 import Modal from './Modal';
 import FoodForm from './FoodForm';
 
-function LogMealModal({ onMealLogged }) {
+function LogMealModal({ onMealLogged, selectedDate }) {
   const [foods, setFoods] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFood, setSelectedFood] = useState(null);
@@ -29,9 +29,11 @@ function LogMealModal({ onMealLogged }) {
       return;
     }
     try {
+      const dateString = selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
       await logFood({
         food_id: selectedFood.id,
         servings: parseFloat(servings),
+        log_date: dateString,
       });
       alert(`${selectedFood.name} logged successfully!`);
       if (onMealLogged) onMealLogged();

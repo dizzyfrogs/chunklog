@@ -5,6 +5,7 @@ import UnitSwitch from './UnitSwitch';
 function WeightLog({ onWeightLogged }) {
   const [weight, setWeight] = useState('');
   const [weightUnit, setWeightUnit] = useState('lbs');
+  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,9 +17,9 @@ function WeightLog({ onWeightLogged }) {
       } else {
         weightInKg = parseFloat(weight);
       }
-      const today = new Date().toISOString().split('T')[0];
-      await logWeight({ weight: weightInKg, log_date: today });
+      await logWeight({ weight: weightInKg, log_date: logDate });
       setWeight('');
+      setLogDate(new Date().toISOString().split('T')[0]);
       alert('Weight logged successfully!');
       if (onWeightLogged) onWeightLogged();
     } catch (error) {
@@ -30,6 +31,17 @@ function WeightLog({ onWeightLogged }) {
   return (
     <div>
       <form onSubmit={handleSubmit}>
+        <label htmlFor="weightDate" style={{ display: 'block', marginBottom: '0.5rem' }}>
+          Date:
+        </label>
+        <input
+          type="date"
+          id="weightDate"
+          value={logDate}
+          onChange={(e) => setLogDate(e.target.value)}
+          style={{ padding: '0.5rem', width: '100%', marginBottom: '1rem' }}
+          required
+        />
         <label>Log a new weight entry</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <input

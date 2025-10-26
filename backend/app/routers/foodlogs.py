@@ -32,3 +32,13 @@ def read_food_logs(
     current_user: models.User = Depends(get_current_user),
 ):
     return crud.get_food_logs(db, user_id=current_user.id, log_date=log_date, skip=skip, limit=limit)
+
+@router.delete("/{log_id}")
+def delete_food_log(
+    log_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if crud.delete_food_log(db, log_id=log_id, user_id=current_user.id):
+        return {"message": "Food log deleted successfully"}
+    return {"message": "Food log not found"}
