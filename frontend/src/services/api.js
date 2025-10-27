@@ -6,6 +6,7 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -19,6 +20,70 @@ api.interceptors.request.use(
   }
 );
 
+// Response interceptor for token refresh
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // If error is 401 and we haven't tried to refresh yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // If already refreshing, queue this request
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers['Authorization'] = `Bearer ${token}`;
+          return api(originalRequest);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+      
+      const refreshToken = localStorage.getItem('refresh_token');
+      if (!refreshToken) {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+        return Promise.reject(error);
+      }
+
+      try {
+        const response = await refreshAccessToken(refreshToken);
+        const { access_token } = response.data;
+        localStorage.setItem('token', access_token);
+        processQueue(null, access_token);
+        originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+        isRefreshing = false;
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        window.location.href = '/';
+        isRefreshing = false;
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 // --- Auth Functions ---
 export const loginUser = (email, password) => {
   const formData = new URLSearchParams();
@@ -27,6 +92,10 @@ export const loginUser = (email, password) => {
   return api.post('/auth/login', formData, {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   });
+};
+
+export const refreshAccessToken = (refreshToken) => {
+  return api.post('/auth/refresh', { refresh_token: refreshToken });
 };
 
 export const signupUser = (userData) => {

@@ -22,14 +22,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (newToken) => {
+  const login = async (newToken, refreshToken) => {
     localStorage.setItem('token', newToken);
+    if (refreshToken) {
+      localStorage.setItem('refresh_token', refreshToken);
+    }
     setToken(newToken);
     await checkProfileCompletion(); // Check profile status immediately after login
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
     setToken(null);
     setIsProfileComplete(true); // Reset on logout
   };

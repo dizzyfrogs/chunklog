@@ -14,7 +14,7 @@ function Login() {
     setError('');
     try {
       const response = await loginUser(usernameOrEmail, password);
-      login(response.data.access_token);
+      login(response.data.access_token, response.data.refresh_token);
     } catch (error) {
       console.error('Login failed:', error);
       setError('Login failed. Check your credentials.');
