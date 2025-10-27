@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { TextField, Button, Box, Typography, MenuItem, Select, FormControl, InputLabel, ToggleButton, ToggleButtonGroup, CircularProgress, Card } from '@mui/material';
 import { getCurrentUser, updateUserProfile } from '../services/api';
-import { IoMale, IoFemale } from 'react-icons/io5';
-import UnitSwitch from './UnitSwitch';
-import ToggleButtonGroup from './ToggleButtonGroup';
-import '../styles/Profile.css';
 
 const genderOptions = [
-  { title: 'Male', value: 'male', icon: <IoMale /> },
-  { title: 'Female', value: 'female', icon: <IoFemale /> },
+  { title: 'Male', value: 'male' },
+  { title: 'Female', value: 'female' },
 ];
 
 const activityOptions = [
@@ -72,54 +69,121 @@ function Profile({ onProfileUpdate }) {
     }
   };
 
-  if (loading) return <p>Loading profile...</p>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}><CircularProgress /></Box>;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Date of Birth</label>
-        <input type="date" name="date_of_birth" value={formData.date_of_birth} onChange={(e) => setFormData({...formData, date_of_birth: e.target.value})} required />
-      </div>
-      <div className="gender-group">
-        <label>Gender</label>
-        <ToggleButtonGroup
-          options={genderOptions}
-          selectedValue={formData.gender}
-          onSelect={(value) => setFormData({ ...formData, gender: value })}
+    <Card sx={{ 
+      borderRadius: 3,
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05)'
+    }}>
+      <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
+        <TextField
+          fullWidth
+          type="date"
+          label="Date of Birth"
+          value={formData.date_of_birth}
+          onChange={(e) => setFormData({...formData, date_of_birth: e.target.value})}
+          required
+          InputLabelProps={{ shrink: true }}
+          sx={{ mb: 3 }}
         />
-      </div>
-      <div>
-        <label>Height</label>
-        <div className="input-row">
-          {heightUnit === 'ft' ? (
-            <div className="height-inputs">
-              <input type="number" value={feet} onChange={(e) => setFeet(e.target.value)} placeholder="ft" required />
-              <input type="number" value={inches} onChange={(e) => setInches(e.target.value)} placeholder="in" />
-            </div>
-          ) : (
-            <div className="height-inputs">
-              <input type="number" value={cm} onChange={(e) => setCm(e.target.value)} placeholder="cm" required />
-            </div>
-          )}
-          <UnitSwitch unit={heightUnit} setUnit={setHeightUnit} options={['ft', 'cm']} />
-        </div>
-      </div>
-      <div>
-        <label>Activity Level</label>
-        <select 
-          name="activity_level" 
-          value={formData.activity_level} 
-          onChange={(e) => setFormData({ ...formData, activity_level: e.target.value })}
+        
+        <Typography variant="body2" sx={{ mb: 1.5, fontWeight: 600 }}>Gender</Typography>
+        <ToggleButtonGroup
+          value={formData.gender}
+          exclusive
+          onChange={(e, value) => value && setFormData({ ...formData, gender: value })}
+          fullWidth
+          sx={{ mb: 3, display: 'flex', gap: 0.5, '& .MuiToggleButton-root': { 
+            flex: 1,
+            borderRadius: 2,
+            py: 1.5,
+            textTransform: 'none',
+            fontWeight: 600
+          } }}
         >
-          {activityOptions.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.title} ({option.subtitle})
-            </option>
+          {genderOptions.map(option => (
+            <ToggleButton key={option.value} value={option.value}>
+              {option.title}
+            </ToggleButton>
           ))}
-        </select>
-      </div>
-      <button type="submit" style={{ marginTop: '1rem' }}>Save Profile</button>
-    </form>
+        </ToggleButtonGroup>
+        
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            {heightUnit === 'ft' ? (
+              <>
+                <TextField
+                  fullWidth type="number" label="Feet" value={feet}
+                  onChange={(e) => setFeet(e.target.value)}
+                  required sx={{ flex: 1 }}
+                />
+                <TextField
+                  fullWidth type="number" label="Inches" value={inches}
+                  onChange={(e) => setInches(e.target.value)} required sx={{ flex: 1 }}
+                />
+              </>
+            ) : (
+              <TextField
+                fullWidth
+                type="number"
+                label="Height (cm)"
+                value={cm}
+                onChange={(e) => setCm(e.target.value)}
+                required
+              />
+            )}
+          </Box>
+          <ToggleButtonGroup
+            value={heightUnit}
+            exclusive
+            onChange={(e, value) => value && setHeightUnit(value)}
+            fullWidth
+            sx={{ display: 'flex', gap: 0.5, '& .MuiToggleButton-root': { 
+              flex: 1,
+              borderRadius: 2,
+              py: 1,
+              textTransform: 'none',
+              fontWeight: 600
+            } }}
+          >
+            <ToggleButton value="ft">ft</ToggleButton>
+            <ToggleButton value="cm">cm</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+        
+        <FormControl fullWidth sx={{ mb: 3 }}>
+          <InputLabel>Activity Level</InputLabel>
+          <Select
+            value={formData.activity_level}
+            onChange={(e) => setFormData({ ...formData, activity_level: e.target.value })}
+            label="Activity Level"
+          >
+            {activityOptions.map(option => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.title} ({option.subtitle})
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        
+        <Button 
+          type="submit" 
+          variant="contained" 
+          fullWidth 
+          size="large"
+          sx={{ 
+            py: 1.5,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            fontWeight: 600,
+            textTransform: 'none',
+            fontSize: '1rem'
+          }}
+        >
+          Save Profile
+        </Button>
+      </Box>
+    </Card>
   );
 }
 export default Profile;

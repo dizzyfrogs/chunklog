@@ -1,32 +1,25 @@
 import React from 'react';
-import { FiHome, FiTrendingUp, FiBookOpen, FiUser } from 'react-icons/fi';
-import { PiBowlFood } from "react-icons/pi";
-import '../styles/Navigation.css';
+import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
+import { Home, TrendingUp, Restaurant, Person } from '@mui/icons-material';
 
 function BottomNav({ activePage, setActivePage }) {
-  const getButtonClass = (pageName) => {
-    return `nav-button ${activePage === pageName ? 'active' : ''}`;
+  const handleChange = (event, newValue) => {
+    setActivePage(newValue);
   };
 
   return (
-    <nav className="bottom-nav">
-      <button className={getButtonClass('dashboard')} onClick={() => setActivePage('dashboard')}>
-        <FiHome className="icon" />
-        <span>Home</span>
-      </button>
-      <button className={getButtonClass('weight')} onClick={() => setActivePage('weight')}>
-        <FiTrendingUp className="icon" />
-        <span>Weight</span>
-      </button>
-      <button className={getButtonClass('food')} onClick={() => setActivePage('food')}>
-        <PiBowlFood className="icon" />
-        <span>Food</span>
-      </button>
-      <button className={getButtonClass('profile')} onClick={() => setActivePage('profile')}>
-        <FiUser className="icon" />
-        <span>Profile</span>
-      </button>
-    </nav>
+    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000 }} elevation={3}>
+      <BottomNavigation 
+        value={activePage} 
+        onChange={handleChange}
+        showLabels
+      >
+        <BottomNavigationAction label="Home" icon={<Home />} value="dashboard" />
+        <BottomNavigationAction label="Weight" icon={<TrendingUp />} value="weight" />
+        <BottomNavigationAction label="Food" icon={<Restaurant />} value="food" />
+        <BottomNavigationAction label="Profile" icon={<Person />} value="profile" />
+      </BottomNavigation>
+    </Paper>
   );
 }
 

@@ -1,21 +1,32 @@
 import React from 'react';
-import '../styles/Modal.css';
+import { Dialog, DialogTitle, DialogContent, IconButton, Box } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
 function Modal({ isOpen, onClose, title, children }) {
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{title}</h2>
-          <button onClick={onClose} className="close-button">&times;</button>
-        </div>
-        {children}
-      </div>
-    </div>
+    <Dialog 
+      open={isOpen} 
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+        }
+      }}
+    >
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {title}
+        <IconButton onClick={onClose} size="small">
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        <Box sx={{ mt: 1 }}>
+          {children}
+        </Box>
+      </DialogContent>
+    </Dialog>
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TextField, Button, Box } from '@mui/material';
 import { createFood } from '../services/api';
 
 function FoodForm({ onFoodAdded }) {
@@ -36,30 +37,68 @@ function FoodForm({ onFoodAdded }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h4>Add a New Food to Your Library</h4>
-      <div>
-        <label>Food Name:</label>
-        <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Calories:</label>
-        <input type="number" name="calories" value={formData.calories} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Protein (g):</label>
-        <input type="number" name="protein" value={formData.protein} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Carbs (g):</label>
-        <input type="number" name="carbs" value={formData.carbs} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Fat (g):</label>
-        <input type="number" name="fat" value={formData.fat} onChange={handleChange} />
-      </div>
-      <button type="submit">Add Food</button>
-    </form>
+    <Box component="form" onSubmit={handleSubmit}>
+      <TextField
+        fullWidth
+        label="Food Name"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        required
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        fullWidth
+        label="Calories"
+        type="number"
+        name="calories"
+        value={formData.calories}
+        onChange={handleChange}
+        required
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        fullWidth
+        label="Protein (g)"
+        type="number"
+        name="protein"
+        value={formData.protein}
+        onChange={handleChange}
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        fullWidth
+        label="Carbs (g)"
+        type="number"
+        name="carbs"
+        value={formData.carbs}
+        onChange={handleChange}
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        fullWidth
+        label="Fat (g)"
+        type="number"
+        name="fat"
+        value={formData.fat}
+        onChange={handleChange}
+        sx={{ mb: 2 }}
+      />
+      <Button 
+        type="submit" 
+        variant="contained" 
+        fullWidth 
+        size="large"
+        sx={{
+          py: 1.5,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          fontWeight: 600,
+          textTransform: 'none'
+        }}
+      >
+        Add Food
+      </Button>
+    </Box>
   );
 }
 

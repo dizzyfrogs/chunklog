@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { Box, Card, CardContent, Typography, IconButton, Button, Chip, ToggleButton, ToggleButtonGroup, useTheme } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { getWeightLogs, deleteWeightLog } from '../services/api';
 import Modal from '../components/Modal';
 import WeightLog from '../components/WeightLog';
-import UnitSwitch from '../components/UnitSwitch';
-import PageHeader from '../components/PageHeader';
 import '../styles/WeightPage.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
+
 
 const parseLocalDate = (dateString) => {
     const [year, month, day] = dateString.split('-').map(Number);
@@ -22,6 +23,8 @@ const formatTime = (unixTimestamp) => {
 };
 
 function WeightPage() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [logs, setLogs] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -66,84 +69,189 @@ function WeightPage() {
       {
         label: `Weight (${unit})`,
         data: [...logs].reverse().map(log => unit === 'lbs' ? log.weight * 2.20462 : log.weight),
-        borderColor: 'var(--primary)',
-        backgroundColor: 'rgba(97, 218, 251, 0.2)',
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
         fill: true,
-        tension: 0.3,
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#6366f1',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
       },
     ],
   };
   
-  const chartOptions = {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { x: { grid: { color: 'rgba(255,255,255,0.1)' } }, y: { grid: { color: 'rgba(255,255,251,0.1)' } } }
+  const chartOptions = React.useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { 
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: isDark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.95)',
+        borderColor: 'rgba(99, 102, 241, 0.3)',
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 12,
+        titleColor: isDark ? '#fff' : '#000',
+        bodyColor: isDark ? '#fff' : '#000',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+      }
+    },
+    scales: { 
+      x: { 
+        grid: { display: false },
+        ticks: { color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', font: { size: 11 } }
+      }, 
+      y: { 
+        grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' },
+        ticks: { color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', font: { size: 11 } }
+      } 
+    }
+  }), [isDark]);
+
+  const handleUnitChange = (event, newUnit) => {
+    if (newUnit !== null) {
+      setUnit(newUnit);
+    }
   };
 
   return (
-    <div>
-      <PageHeader title="Weight Tracker" />
-      <hr />
+    <Box>
+      {/* Header */}
+      <Box sx={{ 
+        mb: 3,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 3,
+        p: 2.5,
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(99, 102, 241, 0.2)'
+      }}>
+        <Box sx={{ textAlign: 'center', mb: 2 }}>
+          <Typography variant="caption" sx={{ opacity: 0.9, display: 'block', mb: 0.5 }}>
+            Latest Weigh-In
+          </Typography>
+          <Typography variant="h3" fontWeight={700}>
+            {logs.length > 0 ? displayWeight : 'N/A'} {unit}
+          </Typography>
+        </Box>
+        <ToggleButtonGroup
+          value={unit}
+          exclusive
+          onChange={handleUnitChange}
+          size="small"
+          sx={{ 
+            bgcolor: 'rgba(255, 255, 255, 0.2)',
+            display: 'flex',
+            '& .MuiToggleButton-root': {
+              color: 'white',
+              borderColor: 'rgba(255, 255, 255, 0.3)',
+              flex: 1,
+              '&.Mui-selected': {
+                bgcolor: 'rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.4)',
+                },
+              },
+            },
+          }}
+        >
+          <ToggleButton value="lbs">lbs</ToggleButton>
+          <ToggleButton value="kg">kg</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
-      <div className="latest-weight-card">
-        <div className="label">Latest Weigh-In</div>
-        <div className="value">{logs.length > 0 ? displayWeight : 'N/A'} {unit}</div>
-        <div className="unit-toggle">
-          <UnitSwitch unit={unit} setUnit={setUnit} options={['lbs', 'kg']} />
-        </div>
-      </div>
-
-      <button className="log-weight-btn" onClick={() => setIsModalOpen(true)}>Weigh In</button>
+      <Button 
+        fullWidth 
+        variant="contained" 
+        size="large"
+        onClick={() => setIsModalOpen(true)}
+        sx={{ 
+          mb: 3,
+          py: 1.5,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          fontWeight: 600,
+          textTransform: 'none'
+        }}
+      >
+        Weigh In
+      </Button>
       
       {logs.length > 1 ? (
-        <div style={{marginTop: '1.5rem'}}>
-          <Line options={chartOptions} data={chartData} />
-        </div>
+        <Card sx={{ mb: 3, borderRadius: 3, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)' }}>
+          <CardContent sx={{ p: 2 }}>
+            <Box sx={{ height: 250 }}>
+              <Line options={chartOptions} data={chartData} />
+            </Box>
+          </CardContent>
+        </Card>
       ) : (
-        <p style={{textAlign: 'center', margin: '2rem 0', color: 'var(--text-secondary)'}}>
-            Log your weight to see your progress chart.
-        </p>
+        <Card sx={{ mb: 3, borderRadius: 3 }}>
+          <CardContent sx={{ p: 4, textAlign: 'center' }}>
+            <Typography align="center" color="text.secondary">
+              Log your weight to see your progress chart.
+            </Typography>
+          </CardContent>
+        </Card>
       )}
 
-      <hr />
-      <button onClick={() => setShowHistory(!showHistory)} className="link-button" style={{fontSize: '1rem'}}>
+      <Button 
+        fullWidth 
+        variant="outlined"
+        onClick={() => setShowHistory(!showHistory)}
+        sx={{ mb: 2 }}
+      >
         {showHistory ? 'Hide' : 'Show'} Full History
-      </button>
+      </Button>
 
       {showHistory && (
-        <div style={{ marginTop: '1rem' }}>
+        <Box>
           {logs.map((log) => (
-            <div key={log.id} className="history-item" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <div style={{display: 'flex', flexDirection: 'column'}}>
-                <span className="date">{parseLocalDate(log.log_date).toLocaleDateString()}</span>
-                <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>{formatTime(log.timestamp)}</span>
-              </div>
-              <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-                <strong>{unit === 'lbs' ? (log.weight * 2.20462).toFixed(1) : log.weight.toFixed(1)} {unit}</strong>
-                <button 
-                  onClick={() => handleDeleteLog(log.id)}
-                  style={{ 
-                    background: '#dc3545', 
-                    color: 'white', 
-                    border: 'none', 
-                    padding: '0.25rem 0.75rem', 
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+            <Card key={log.id} sx={{ mb: 1, borderRadius: 3, boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
+              <CardContent sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                p: 2
+              }}>
+                <Box>
+                  <Typography variant="body1" fontWeight={600}>
+                    {parseLocalDate(log.log_date).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatTime(log.timestamp)}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Chip 
+                    label={`${unit === 'lbs' ? (log.weight * 2.20462).toFixed(1) : log.weight.toFixed(1)} ${unit}`}
+                    size="small"
+                    sx={{ fontWeight: 600 }}
+                  />
+                  <IconButton 
+                    size="small" 
+                    color="error"
+                    onClick={() => handleDeleteLog(log.id)}
+                    sx={{ 
+                      '&:hover': { 
+                        bgcolor: 'error.light',
+                        color: 'white'
+                      }
+                    }}
+                  >
+                    <Delete fontSize="small" />
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </Card>
           ))}
-        </div>
+        </Box>
       )}
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Log Your Weight">
         <WeightLog onWeightLogged={handleWeightLogged} />
       </Modal>
-    </div>
+    </Box>
   );
 }
 export default WeightPage;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Fab, Action } from 'react-tiny-fab';
-import 'react-tiny-fab/dist/styles.css';
-import { FiPlus, FiTrendingUp, FiBookOpen } from 'react-icons/fi';
+import { Box, Container, Typography, IconButton, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { Brightness4, Brightness7, TrendingUp, Restaurant } from '@mui/icons-material';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import DashboardPage from './pages/DashboardPage';
@@ -13,11 +13,13 @@ import Modal from './components/Modal';
 import LogMealModal from './components/LogMealModal';
 import WeightLog from './components/WeightLog';
 import { useAuth } from './context/AuthContext';
+import { useAppTheme } from './context/ThemeContext';
 import './App.css';
-import './styles/Fab.css';
 
 function App() {
   const { token, isProfileComplete } = useAuth();
+  const { mode, toggleMode } = useAppTheme();
+  const theme = useTheme();
   const [isLoginView, setIsLoginView] = useState(true);
   const [activePage, setActivePage] = useState('dashboard');
   const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
@@ -55,20 +57,48 @@ function App() {
     handleDataRefresh(); // Refresh the current page
   };
 
-  const appContainerStyle = { paddingBottom: '80px' };
-
   return (
-    <div className="App">
-      <div className="App-container" style={token ? appContainerStyle : {}}>
+    <Box sx={{ 
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      bgcolor: 'background.default',
+      color: 'text.primary',
+      background: mode === 'dark' 
+        ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
+        : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)'
+    }}>
+      {token && (
+        <IconButton
+          sx={{ 
+            position: 'fixed', 
+            top: 16, 
+            right: 16, 
+            zIndex: 1000,
+            bgcolor: 'background.paper',
+            '&:hover': { bgcolor: 'action.hover' }
+          }}
+          onClick={toggleMode}
+          color="inherit"
+        >
+          {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+        </IconButton>
+      )}
+      
+      <Box sx={{ 
+        flex: 1,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        pb: token ? 10 : 0
+      }}>
+        <Container maxWidth="sm" sx={{ py: 2 }}>
         {token ? (
           !isProfileComplete ? (
-            <>
-              <h2>Complete Your Profile</h2>
-              <p>Please fill out your profile to continue.</p>
-              <hr/>
-              {/* Also pass the refresh function here for the initial setup */}
+            <Box>
+              <Typography variant="h2" gutterBottom>Complete Your Profile</Typography>
+              <Typography variant="body1" color="text.secondary" paragraph>Please fill out your profile to continue.</Typography>
               <ProfilePage onProfileUpdate={handleDataRefresh} />
-            </>
+            </Box>
           ) : (
             <>
               {renderPage()}
@@ -79,20 +109,22 @@ function App() {
               />
 
               {activePage === 'dashboard' && (
-                <Fab
-                  style={{ bottom: 80, right: 24 }}
-                  mainButtonStyles={{ backgroundColor: 'var(--primary)' }}
-                  icon={<FiPlus />}
-                  event="click"
-                  alwaysShowTitle={true}
+                <SpeedDial
+                  ariaLabel="Quick actions"
+                  sx={{ position: 'fixed', bottom: 100, right: 16 }}
+                  icon={<SpeedDialIcon />}
                 >
-                  <Action text="Log Meal" onClick={() => setIsMealModalOpen(true)} style={{ backgroundColor: 'var(--surface)', color: 'var(--primary)' }} >
-                    <FiBookOpen />
-                  </Action>
-                  <Action text="Log Weight" onClick={() => setIsWeightModalOpen(true)} style={{ backgroundColor: 'var(--surface)', color: 'var(--primary)' }} >
-                    <FiTrendingUp />
-                  </Action>
-                </Fab>
+                  <SpeedDialAction
+                    icon={<Restaurant />}
+                    tooltipTitle="Log Meal"
+                    onClick={() => setIsMealModalOpen(true)}
+                  />
+                  <SpeedDialAction
+                    icon={<TrendingUp />}
+                    tooltipTitle="Log Weight"
+                    onClick={() => setIsWeightModalOpen(true)}
+                  />
+                </SpeedDial>
               )}
 
               <Modal isOpen={isWeightModalOpen} onClose={() => setIsWeightModalOpen(false)} title="Log Your Weight">
@@ -105,25 +137,36 @@ function App() {
           )
         ) : (
           isLoginView ? (
-            <>
-              <h1>Welcome to ChunkLog!</h1>
+            <Box>
+              <Typography variant="h1" align="center" gutterBottom>Welcome to ChunkLog!</Typography>
               <Login />
-              <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-                Don't have an account? <button onClick={() => setIsLoginView(false)} className="link-button">Sign Up</button>
-              </p>
-            </>
+              <Box sx={{ mt: 3, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  Don't have an account?{' '}
+                  <Typography component="span" onClick={() => setIsLoginView(false)} sx={{ cursor: 'pointer', color: 'primary.main', textDecoration: 'underline' }}>
+                    Sign Up
+                  </Typography>
+                </Typography>
+              </Box>
+            </Box>
           ) : (
-            <>
-              <h1>Welcome to ChunkLog!</h1>
+            <Box>
+              <Typography variant="h1" align="center" gutterBottom>Welcome to ChunkLog!</Typography>
               <Signup onSignupSuccess={() => setIsLoginView(true)} />
-              <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-                Already have an account? <button onClick={() => setIsLoginView(true)} className="link-button">Log In</button>
-              </p>
-            </>
+              <Box sx={{ mt: 3, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  Already have an account?{' '}
+                  <Typography component="span" onClick={() => setIsLoginView(true)} sx={{ cursor: 'pointer', color: 'primary.main', textDecoration: 'underline' }}>
+                    Log In
+                  </Typography>
+                </Typography>
+              </Box>
+            </Box>
           )
         )}
-      </div>
-    </div>
+        </Container>
+      </Box>
+    </Box>
   );
 }
 

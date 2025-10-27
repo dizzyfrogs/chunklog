@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  Box, 
+  Button, 
+  TextField, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  MenuItem, 
+  ToggleButton, 
+  ToggleButtonGroup, 
+  Typography, 
+  Alert, 
+  CircularProgress,
+  Card
+} from '@mui/material';
 import { calculateGoal, setManualGoal, getWeightLogs } from '../services/api';
 
-const toggleButtonStyle = (isActive) => ({
-  flex: 1,
-  padding: '0.75rem',
-  background: isActive ? 'var(--primary)' : 'var(--background)',
-  color: isActive ? 'var(--background)' : 'var(--text-primary)',
-  border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
-  borderRadius: '4px',
-  cursor: 'pointer',
-  fontWeight: 'bold',
-});
-
 function GoalForm({ currentGoal, onGoalSet }) {
-  const [mode, setMode] = useState('manual'); // Default to manual
+  const [mode, setMode] = useState('manual');
   const [hasWeightLogs, setHasWeightLogs] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // State for automatic mode
   const [goalType, setGoalType] = useState('weight_loss');
-
-  // State for manual mode
   const [manualData, setManualData] = useState({
     target_calories: currentGoal?.target_calories || '',
     target_protein: currentGoal?.target_protein || '',
@@ -35,7 +35,7 @@ function GoalForm({ currentGoal, onGoalSet }) {
         const response = await getWeightLogs();
         if (response.data.length > 0) {
           setHasWeightLogs(true);
-          setMode('automatic'); // If they have logs, default to automatic
+          setMode('automatic');
         }
       } catch (error) {
         console.error("Failed to check for weight logs", error);
@@ -72,51 +72,129 @@ function GoalForm({ currentGoal, onGoalSet }) {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}><CircularProgress /></Box>;
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Box component="form" onSubmit={handleSubmit}>
       {hasWeightLogs ? (
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-          <button type="button" style={toggleButtonStyle(mode === 'automatic')} onClick={() => setMode('automatic')}>
-            Automatic
-          </button>
-          <button type="button" style={toggleButtonStyle(mode === 'manual')} onClick={() => setMode('manual')}>
-            Manual
-          </button>
-        </div>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="body2" sx={{ mb: 1.5, fontWeight: 600 }}>Calculation Mode</Typography>
+          <ToggleButtonGroup
+            value={mode}
+            exclusive
+            onChange={(e, value) => value && setMode(value)}
+            fullWidth
+            sx={{ display: 'flex', gap: 0.5, '& .MuiToggleButton-root': { 
+              flex: 1,
+              borderRadius: 2,
+              py: 1.5,
+              textTransform: 'none',
+              fontWeight: 600
+            } }}
+          >
+            <ToggleButton value="automatic">Automatic</ToggleButton>
+            <ToggleButton value="manual">Manual</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
       ) : (
-        // If no logs, show a helpful message instead of the toggle
-        <div style={{ padding: '1rem', background: 'var(--background)', borderRadius: '4px', textAlign: 'center', marginBottom: '1.5rem' }}>
-          <p style={{color: 'var(--text-secondary)'}}>Log your weight at least once to unlock automatic goal suggestions!</p>
-        </div>
+        <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
+          Log your weight at least once to unlock automatic goal suggestions!
+        </Alert>
       )}
 
       {mode === 'automatic' && hasWeightLogs ? (
-        <>
-          <p style={{color: 'var(--text-secondary)', textAlign: 'center'}}>Calculate your daily targets based on your profile and goal.</p>
-          <div>
-              <label>Select Your Goal Template:</label>
-              <select value={goalType} onChange={(e) => setGoalType(e.target.value)}>
-                  <option value="maintenance">Maintain Weight</option>
-                  <option value="weight_loss">Lose Weight (~1 lb / week)</option>
-                  <option value="muscle_growth">Build Muscle (Lean Bulk)</option>
-              </select>
-          </div>
-          <button type="submit" style={{marginTop: '1rem'}}>Calculate Targets</button>
-        </>
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Calculate your daily targets based on your profile and goal.
+          </Typography>
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <InputLabel>Goal Template</InputLabel>
+            <Select
+              value={goalType}
+              onChange={(e) => setGoalType(e.target.value)}
+              label="Goal Template"
+            >
+              <MenuItem value="maintenance">Maintain Weight</MenuItem>
+              <MenuItem value="weight_loss">Lose Weight (~1 lb / week)</MenuItem>
+              <MenuItem value="muscle_growth">Build Muscle (Lean Bulk)</MenuItem>
+            </Select>
+          </FormControl>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            fullWidth 
+            size="large"
+            sx={{
+              py: 1.5,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              fontWeight: 600,
+              textTransform: 'none',
+              fontSize: '1rem'
+            }}
+          >
+            Calculate Targets
+          </Button>
+        </Box>
       ) : (
-        <>
-          <p style={{color: 'var(--text-secondary)', textAlign: 'center'}}>Manually set your own daily targets.</p>
-          <div><label>Calories:</label><input type="number" name="target_calories" value={manualData.target_calories} onChange={handleManualChange} /></div>
-          <div><label>Protein (g):</label><input type="number" name="target_protein" value={manualData.target_protein} onChange={handleManualChange} /></div>
-          <div><label>Carbs (g):</label><input type="number" name="target_carbs" value={manualData.target_carbs} onChange={handleManualChange} /></div>
-          <div><label>Fat (g):</label><input type="number" name="target_fat" value={manualData.target_fat} onChange={handleManualChange} /></div>
-          <button type="submit" style={{marginTop: '1rem'}}>Save Manual Goal</button>
-        </>
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Manually set your own daily targets.
+          </Typography>
+          <TextField
+            fullWidth
+            type="number"
+            name="target_calories"
+            label="Calories"
+            value={manualData.target_calories}
+            onChange={handleManualChange}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            fullWidth
+            type="number"
+            name="target_protein"
+            label="Protein (g)"
+            value={manualData.target_protein}
+            onChange={handleManualChange}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            fullWidth
+            type="number"
+            name="target_carbs"
+            label="Carbs (g)"
+            value={manualData.target_carbs}
+            onChange={handleManualChange}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            fullWidth
+            type="number"
+            name="target_fat"
+            label="Fat (g)"
+            value={manualData.target_fat}
+            onChange={handleManualChange}
+            sx={{ mb: 2 }}
+          />
+          <Button 
+            type="submit" 
+            variant="contained" 
+            fullWidth 
+            size="large"
+            sx={{
+              py: 1.5,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              fontWeight: 600,
+              textTransform: 'none',
+              fontSize: '1rem'
+            }}
+          >
+            Save Manual Goal
+          </Button>
+        </Box>
       )}
-    </form>
+    </Box>
   );
 }
 

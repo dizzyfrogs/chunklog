@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Box, Card, CardContent, Typography, IconButton, Button, Chip } from '@mui/material';
+import { ChevronLeft, ChevronRight, Delete } from '@mui/icons-material';
 import Modal from '../components/Modal';
 import LogMealModal from '../components/LogMealModal';
 import FoodForm from '../components/FoodForm';
 import { getFoodLogs, deleteFoodLog } from '../services/api';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import PageHeader from '../components/PageHeader';
 import '../styles/FoodPage.css';
 
 const formatTime = (unixTimestamp) => {
@@ -45,7 +45,9 @@ function FoodPage() {
     setLoading(true);
     try {
       const dateString = toYYYYMMDD(date);
+      console.log('Fetching logs for date:', date, 'formatted as:', dateString);
       const response = await getFoodLogs(dateString);
+      console.log('Received logs:', response.data);
       setDailyLog(response.data);
     } catch (error) {
       console.error(`Failed to fetch log for ${toYYYYMMDD(date)}`, error);
@@ -59,9 +61,14 @@ function FoodPage() {
     fetchLogForDate(currentDate);
   }, [currentDate]);
 
-  const handleMealLogged = () => {
+  const handleMealLogged = async () => {
+    console.log('handleMealLogged called');
     setIsLogModalOpen(false);
-    fetchLogForDate(currentDate);
+    // Wait a bit for the modal to close, then refresh
+    setTimeout(async () => {
+      console.log('Refreshing log for date:', currentDate);
+      await fetchLogForDate(currentDate);
+    }, 300);
   };
 
   const handleDeleteLog = async (logId) => {
@@ -92,69 +99,132 @@ function FoodPage() {
   const mealGroups = groupMeals(dailyLog);
 
   return (
-    <div>
-      <PageHeader title="Food Log" />
-      <hr />
-
-      <div className="date-navigator">
-        <button onClick={goToPreviousDay} className="date-nav-btn"><FiChevronLeft /></button>
-        <span className="date-display">{currentDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}</span>
-        <button onClick={goToNextDay} className="date-nav-btn"><FiChevronRight /></button>
-      </div>
-
-      <div className="calorie-summary-card">
-        <div className="label">Total Calories</div>
-        <div className="value">{Math.round(totalCalories)}</div>
-      </div>
+    <Box>
+      {/* Header */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        mb: 3,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 3,
+        p: 2.5,
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(99, 102, 241, 0.2)'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <IconButton onClick={goToPreviousDay} size="small" sx={{ color: 'white' }}>
+            <ChevronLeft />
+          </IconButton>
+          <Typography variant="h6" fontWeight={600}>
+            {currentDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
+          </Typography>
+          <IconButton onClick={goToNextDay} size="small" sx={{ color: 'white' }}>
+            <ChevronRight />
+          </IconButton>
+        </Box>
+        <Box sx={{ textAlign: 'right' }}>
+          <Typography variant="caption" sx={{ opacity: 0.9, display: 'block', mb: 0.5 }}>
+            Total Calories
+          </Typography>
+          <Typography variant="h5" fontWeight={700}>{Math.round(totalCalories)}</Typography>
+        </Box>
+      </Box>
       
-      <div className="log-meal-action">
-          <button onClick={() => setIsLogModalOpen(true)}>Log Meal</button>
-      </div>
+      <Button 
+        fullWidth 
+        variant="contained" 
+        size="large"
+        onClick={() => setIsLogModalOpen(true)}
+        sx={{ 
+          mb: 3,
+          py: 1.5,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          fontWeight: 600,
+          textTransform: 'none'
+        }}
+      >
+        Log Meal
+      </Button>
 
-      {loading ? <p>Loading log...</p> : (
-        <div>
+      {loading ? (
+        <Typography>Loading log...</Typography>
+      ) : (
+        <Box>
           {Object.entries(mealGroups).map(([groupName, logs]) => (
             logs.length > 0 && (
-              <div key={groupName} className="meal-group">
-                <div className="meal-group-header">{groupName}</div>
-                {logs.map(log => (
-                  <div key={log.id} className="log-item">
-                    <div className="log-item-details">
-                      <div className="name">{log.food.name}</div>
-                      <div className="info">
-                        {log.servings} serving{log.servings > 1 ? 's' : ''} &bull; {formatTime(log.timestamp)}
-                      </div>
-                    </div>
-                    <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-                      <div className="log-item-calories">
-                        {Math.round(log.food.calories * log.servings)}
-                      </div>
-                      <button 
-                        onClick={() => handleDeleteLog(log.id)}
-                        style={{ 
-                          background: '#dc3545', 
-                          color: 'white', 
-                          border: 'none', 
-                          padding: '0.25rem 0.5rem', 
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <Card key={groupName} sx={{ 
+                mb: 2,
+                borderRadius: 3,
+                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.05)'
+              }}>
+                <CardContent sx={{ p: 2.5 }}>
+                  <Typography variant="subtitle2" sx={{ 
+                    mb: 2, 
+                    fontWeight: 700,
+                    color: 'primary.main',
+                    textTransform: 'uppercase',
+                    fontSize: '0.75rem',
+                    letterSpacing: 1
+                  }}>
+                    {groupName}
+                  </Typography>
+                  {logs.map((log, index) => (
+                    <Box
+                      key={log.id}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        py: 1.5,
+                        borderBottom: index < logs.length - 1 ? 1 : 0,
+                        borderColor: 'divider'
+                      }}
+                    >
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body1" fontWeight={600} sx={{ mb: 0.5 }}>
+                          {log.food.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {log.servings} serving{log.servings > 1 ? 's' : ''} &bull; {formatTime(log.timestamp)}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        <Chip 
+                          label={`${Math.round(log.food.calories * log.servings)} kcal`}
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                        <IconButton 
+                          size="small" 
+                          color="error"
+                          onClick={() => handleDeleteLog(log.id)}
+                          sx={{ 
+                            '&:hover': { 
+                              bgcolor: 'error.light',
+                              color: 'white'
+                            }
+                          }}
+                        >
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
             )
           ))}
           {!loading && dailyLog.length === 0 && (
-            <p style={{textAlign: 'center', color: 'var(--text-secondary)', marginTop: '2rem'}}>
-                No meals logged for this day.
-            </p>
+            <Card sx={{ mt: 3, borderRadius: 3 }}>
+              <CardContent sx={{ p: 5, textAlign: 'center' }}>
+                <Typography variant="body1" color="text.secondary">
+                  No meals logged for this day.
+                </Typography>
+              </CardContent>
+            </Card>
           )}
-        </div>
+        </Box>
       )}
 
       <Modal isOpen={isLogModalOpen} onClose={() => setIsLogModalOpen(false)} title="Log a Meal">
@@ -163,7 +233,7 @@ function FoodPage() {
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add to Food Library">
         <FoodForm onFoodAdded={() => setIsAddModalOpen(false)} />
       </Modal>
-    </div>
+    </Box>
   );
 }
 
