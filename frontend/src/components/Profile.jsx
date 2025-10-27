@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, MenuItem, Select, FormControl, InputLabel, ToggleButton, ToggleButtonGroup, CircularProgress, Card } from '@mui/material';
+import { 
+  TextField, 
+  Button, 
+  Box, 
+  Typography, 
+  MenuItem, 
+  Select, 
+  FormControl, 
+  InputLabel, 
+  ToggleButton, 
+  ToggleButtonGroup, 
+  CircularProgress, 
+  Card 
+} from '@mui/material';
 import { toast } from 'react-toastify';
 import { getCurrentUser, updateUserProfile } from '../services/api';
 
@@ -40,12 +53,15 @@ function Profile({ onProfileUpdate }) {
         });
         if (user.height_cm) {
           const totalInches = user.height_cm / 2.54;
-          setFeet(Math.floor(totalInches / 12));
-          setInches(Math.round(totalInches % 12));
-          setCm(user.height_cm);
+          setFeet(String(Math.floor(totalInches / 12)));
+          setInches(String(Math.round(totalInches % 12)));
+          setCm(String(user.height_cm));
         }
-      } catch (error) { console.error("Failed to fetch user data", error); }
-      finally { setLoading(false); }
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchUserData();
   }, []);
@@ -55,7 +71,7 @@ function Profile({ onProfileUpdate }) {
     try {
       let heightInCm;
       if (heightUnit === 'ft') {
-        const totalInches = (parseFloat(feet) * 12) + (parseFloat(inches) || 0);
+        const totalInches = (parseFloat(feet) || 0) * 12 + (parseFloat(inches) || 0);
         heightInCm = totalInches * 2.54;
       } else {
         heightInCm = parseFloat(cm);
@@ -73,15 +89,14 @@ function Profile({ onProfileUpdate }) {
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}><CircularProgress /></Box>;
 
   return (
-    <Card sx={{ 
-      borderRadius: 3,
-      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05)'
-    }}>
-      <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
+    <Card sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)', mb: 5 }}>
+      <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, pb: 5 }}>
+        <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+          DATE OF BIRTH
+        </Typography>
         <TextField
           fullWidth
           type="date"
-          label="Date of Birth"
           value={formData.date_of_birth}
           onChange={(e) => setFormData({...formData, date_of_birth: e.target.value})}
           required
@@ -89,19 +104,24 @@ function Profile({ onProfileUpdate }) {
           sx={{ mb: 3 }}
         />
         
-        <Typography variant="body2" sx={{ mb: 1.5, fontWeight: 600 }}>Gender</Typography>
+        <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+          GENDER
+        </Typography>
         <ToggleButtonGroup
           value={formData.gender}
           exclusive
           onChange={(e, value) => value && setFormData({ ...formData, gender: value })}
-          fullWidth
-          sx={{ mb: 3, display: 'flex', gap: 0.5, '& .MuiToggleButton-root': { 
-            flex: 1,
-            borderRadius: 2,
-            py: 1.5,
-            textTransform: 'none',
-            fontWeight: 600
-          } }}
+          sx={{ 
+            mb: 3,
+            display: 'flex',
+            width: '100%',
+            '& .MuiToggleButton-root': {
+              flex: 1,
+              py: 1.5,
+              textTransform: 'none',
+              fontWeight: 600,
+            },
+          }}
         >
           {genderOptions.map(option => (
             <ToggleButton key={option.value} value={option.value}>
@@ -110,18 +130,29 @@ function Profile({ onProfileUpdate }) {
           ))}
         </ToggleButtonGroup>
         
+        <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+          HEIGHT
+        </Typography>
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
             {heightUnit === 'ft' ? (
               <>
                 <TextField
-                  fullWidth type="number" label="Feet" value={feet}
+                  fullWidth
+                  type="number"
+                  label="Feet"
+                  value={feet}
                   onChange={(e) => setFeet(e.target.value)}
-                  required sx={{ flex: 1 }}
+                  required
+                  sx={{ flex: 1 }}
                 />
                 <TextField
-                  fullWidth type="number" label="Inches" value={inches}
-                  onChange={(e) => setInches(e.target.value)} required sx={{ flex: 1 }}
+                  fullWidth
+                  type="number"
+                  label="Inches"
+                  value={inches}
+                  onChange={(e) => setInches(e.target.value)}
+                  sx={{ flex: 1 }}
                 />
               </>
             ) : (
@@ -139,20 +170,25 @@ function Profile({ onProfileUpdate }) {
             value={heightUnit}
             exclusive
             onChange={(e, value) => value && setHeightUnit(value)}
-            fullWidth
-            sx={{ display: 'flex', gap: 0.5, '& .MuiToggleButton-root': { 
-              flex: 1,
-              borderRadius: 2,
-              py: 1,
-              textTransform: 'none',
-              fontWeight: 600
-            } }}
+            sx={{ 
+              display: 'flex',
+              width: '100%',
+              '& .MuiToggleButton-root': {
+                flex: 1,
+                py: 1,
+                textTransform: 'none',
+                fontWeight: 600,
+              },
+            }}
           >
-            <ToggleButton value="ft">ft</ToggleButton>
+            <ToggleButton value="ft">ft/in</ToggleButton>
             <ToggleButton value="cm">cm</ToggleButton>
           </ToggleButtonGroup>
         </Box>
         
+        <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+          ACTIVITY LEVEL
+        </Typography>
         <FormControl fullWidth sx={{ mb: 3 }}>
           <InputLabel>Activity Level</InputLabel>
           <Select
@@ -178,7 +214,11 @@ function Profile({ onProfileUpdate }) {
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             fontWeight: 600,
             textTransform: 'none',
-            fontSize: '1rem'
+            fontSize: '1rem',
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+            },
           }}
         >
           Save Profile
@@ -187,4 +227,5 @@ function Profile({ onProfileUpdate }) {
     </Card>
   );
 }
+
 export default Profile;

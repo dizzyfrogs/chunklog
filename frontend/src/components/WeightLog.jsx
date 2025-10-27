@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { TextField, Button, Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import { logWeight } from '../services/api';
 
@@ -44,10 +44,12 @@ function WeightLog({ onWeightLogged }) {
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
+      <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+        DATE
+      </Typography>
       <TextField
         fullWidth
         type="date"
-        label="Date"
         value={logDate}
         onChange={(e) => setLogDate(e.target.value)}
         required
@@ -55,37 +57,44 @@ function WeightLog({ onWeightLogged }) {
         sx={{ mb: 3 }}
       />
       
-      <TextField
-        fullWidth
-        type="number"
-        step="0.1"
-        label="Weight"
-        value={weight}
-        onChange={(e) => setWeight(e.target.value)}
-        placeholder={`Weight in ${weightUnit}`}
-        required
-        sx={{ mb: 2 }}
-      />
-      
+      <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+        WEIGHT
+      </Typography>
       <Box sx={{ mb: 3 }}>
+        <TextField
+          fullWidth
+          type="number"
+          step="0.1"
+          label="Enter your weight"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          required
+          sx={{ mb: 2 }}
+          InputProps={{
+            endAdornment: <Box component="span" sx={{ color: 'text.secondary', mr: 1 }}>{weightUnit}</Box>
+          }}
+        />
+        
         <ToggleButtonGroup
           value={weightUnit}
           exclusive
           onChange={handleUnitChange}
-          fullWidth
-          sx={{ display: 'flex', gap: 0.5, '& .MuiToggleButton-root': { 
-            flex: 1,
-            borderRadius: 2,
-            py: 1.5,
-            textTransform: 'none',
-            fontWeight: 600
-          } }}
+          sx={{ 
+            display: 'flex',
+            width: '100%',
+            '& .MuiToggleButton-root': {
+              flex: 1,
+              py: 1.5,
+              textTransform: 'none',
+              fontWeight: 600,
+            },
+          }}
         >
-          <ToggleButton value="lbs">lbs</ToggleButton>
-          <ToggleButton value="kg">kg</ToggleButton>
+          <ToggleButton value="lbs">Pounds (lbs)</ToggleButton>
+          <ToggleButton value="kg">Kilograms (kg)</ToggleButton>
         </ToggleButtonGroup>
       </Box>
-      
+        
       <Button 
         type="submit" 
         variant="contained" 
@@ -95,7 +104,11 @@ function WeightLog({ onWeightLogged }) {
           py: 1.5,
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           fontWeight: 600,
-          textTransform: 'none'
+          textTransform: 'none',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+          },
         }}
       >
         Log Weight

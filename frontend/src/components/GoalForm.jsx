@@ -11,8 +11,7 @@ import {
   ToggleButtonGroup, 
   Typography, 
   Alert, 
-  CircularProgress,
-  Card
+  CircularProgress
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import { calculateGoal, setManualGoal, getWeightLogs } from '../services/api';
@@ -77,28 +76,34 @@ function GoalForm({ currentGoal, onGoalSet }) {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
-      {hasWeightLogs ? (
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {hasWeightLogs && (
         <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" sx={{ mb: 1.5, fontWeight: 600 }}>Calculation Mode</Typography>
+          <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+            MODE
+          </Typography>
           <ToggleButtonGroup
             value={mode}
             exclusive
             onChange={(e, value) => value && setMode(value)}
-            fullWidth
-            sx={{ display: 'flex', gap: 0.5, '& .MuiToggleButton-root': { 
-              flex: 1,
-              borderRadius: 2,
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 600
-            } }}
+            sx={{ 
+              display: 'flex',
+              width: '100%',
+              '& .MuiToggleButton-root': {
+                flex: 1,
+                py: 1.5,
+                textTransform: 'none',
+                fontWeight: 600,
+              },
+            }}
           >
             <ToggleButton value="automatic">Automatic</ToggleButton>
             <ToggleButton value="manual">Manual</ToggleButton>
           </ToggleButtonGroup>
         </Box>
-      ) : (
+      )}
+
+      {!hasWeightLogs && (
         <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
           Log your weight at least once to unlock automatic goal suggestions!
         </Alert>
@@ -106,41 +111,26 @@ function GoalForm({ currentGoal, onGoalSet }) {
 
       {mode === 'automatic' && hasWeightLogs ? (
         <Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Calculate your daily targets based on your profile and goal.
+          <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: 'text.secondary' }}>
+            GOAL TEMPLATE
           </Typography>
           <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel>Goal Template</InputLabel>
+            <InputLabel>Select Goal</InputLabel>
             <Select
               value={goalType}
               onChange={(e) => setGoalType(e.target.value)}
-              label="Goal Template"
+              label="Select Goal"
             >
               <MenuItem value="maintenance">Maintain Weight</MenuItem>
               <MenuItem value="weight_loss">Lose Weight (~1 lb / week)</MenuItem>
               <MenuItem value="muscle_growth">Build Muscle (Lean Bulk)</MenuItem>
             </Select>
           </FormControl>
-          <Button 
-            type="submit" 
-            variant="contained" 
-            fullWidth 
-            size="large"
-            sx={{
-              py: 1.5,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              fontWeight: 600,
-              textTransform: 'none',
-              fontSize: '1rem'
-            }}
-          >
-            Calculate Targets
-          </Button>
         </Box>
       ) : (
         <Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Manually set your own daily targets.
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: 'text.secondary' }}>
+            DAILY TARGETS
           </Typography>
           <TextField
             fullWidth
@@ -176,25 +166,29 @@ function GoalForm({ currentGoal, onGoalSet }) {
             label="Fat (g)"
             value={manualData.target_fat}
             onChange={handleManualChange}
-            sx={{ mb: 2 }}
+            sx={{ mb: 3 }}
           />
-          <Button 
-            type="submit" 
-            variant="contained" 
-            fullWidth 
-            size="large"
-            sx={{
-              py: 1.5,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              fontWeight: 600,
-              textTransform: 'none',
-              fontSize: '1rem'
-            }}
-          >
-            Save Manual Goal
-          </Button>
         </Box>
       )}
+      
+      <Button 
+        type="submit" 
+        variant="contained" 
+        fullWidth 
+        size="large"
+        sx={{
+          py: 1.5,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          fontWeight: 600,
+          textTransform: 'none',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+          },
+        }}
+      >
+        {mode === 'automatic' ? 'Calculate & Save' : 'Save Goal'}
+      </Button>
     </Box>
   );
 }

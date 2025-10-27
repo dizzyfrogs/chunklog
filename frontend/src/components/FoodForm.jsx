@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box } from '@mui/material';
+import { TextField, Button, Box, Grid, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import { createFood } from '../services/api';
 
@@ -38,7 +38,11 @@ function FoodForm({ onFoodAdded }) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2, color: 'text.secondary' }}>
+        REQUIRED
+      </Typography>
+      
       <TextField
         fullWidth
         label="Food Name"
@@ -48,6 +52,7 @@ function FoodForm({ onFoodAdded }) {
         required
         sx={{ mb: 2 }}
       />
+      
       <TextField
         fullWidth
         label="Calories"
@@ -56,35 +61,49 @@ function FoodForm({ onFoodAdded }) {
         value={formData.calories}
         onChange={handleChange}
         required
-        sx={{ mb: 2 }}
+        sx={{ mb: 3 }}
       />
-      <TextField
-        fullWidth
-        label="Protein (g)"
-        type="number"
-        name="protein"
-        value={formData.protein}
-        onChange={handleChange}
-        sx={{ mb: 2 }}
-      />
-      <TextField
-        fullWidth
-        label="Carbs (g)"
-        type="number"
-        name="carbs"
-        value={formData.carbs}
-        onChange={handleChange}
-        sx={{ mb: 2 }}
-      />
-      <TextField
-        fullWidth
-        label="Fat (g)"
-        type="number"
-        name="fat"
-        value={formData.fat}
-        onChange={handleChange}
-        sx={{ mb: 2 }}
-      />
+      
+      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2, mt: 2, color: 'text.secondary' }}>
+        MACRONUTRIENTS (OPTIONAL)
+      </Typography>
+      
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Protein"
+            type="number"
+            name="protein"
+            value={formData.protein}
+            onChange={handleChange}
+            placeholder="g"
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Carbs"
+            type="number"
+            name="carbs"
+            value={formData.carbs}
+            onChange={handleChange}
+            placeholder="g"
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Fat"
+            type="number"
+            name="fat"
+            value={formData.fat}
+            onChange={handleChange}
+            placeholder="g"
+          />
+        </Grid>
+      </Grid>
+        
       <Button 
         type="submit" 
         variant="contained" 
@@ -94,10 +113,14 @@ function FoodForm({ onFoodAdded }) {
           py: 1.5,
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           fontWeight: 600,
-          textTransform: 'none'
+          textTransform: 'none',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+          },
         }}
       >
-        Add Food
+        Add to Library
       </Button>
     </Box>
   );

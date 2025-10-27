@@ -133,11 +133,11 @@ export const createAppTheme = (mode) => createTheme({
         root: {
           '& input': {
             textAlign: 'left',
-            padding: '16.5px 20px !important',
+            padding: '16.5px 30px !important',
           },
           '& textarea': {
             textAlign: 'left',
-            padding: '16.5px 20px',
+            padding: '16.5px 30px',
           },
         },
       },
@@ -147,8 +147,29 @@ export const createAppTheme = (mode) => createTheme({
         root: {
           '& input': {
             textAlign: 'left !important',
-            padding: '16.5px 20px !important',
+            padding: '16.5px 30px !important',
           },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          padding: '16.5px 52px 16.5px 30px',
+          textAlign: 'left',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          padding: '0 !important',
+          '& input': {
+            padding: '16.5px 30px !important',
+          },
+        },
+        input: {
+          padding: '16.5px 30px !important',
         },
       },
     },

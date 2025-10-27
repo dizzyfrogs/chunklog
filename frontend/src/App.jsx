@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, IconButton, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+import { Box, Container, Typography, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Brightness4, Brightness7, TrendingUp, Restaurant } from '@mui/icons-material';
+import { TrendingUp, Restaurant } from '@mui/icons-material';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import DashboardPage from './pages/DashboardPage';
@@ -18,7 +18,7 @@ import './App.css';
 
 function App() {
   const { token, isProfileComplete } = useAuth();
-  const { mode, toggleMode } = useAppTheme();
+  const { mode } = useAppTheme();
   const theme = useTheme();
   const [isLoginView, setIsLoginView] = useState(true);
   const [activePage, setActivePage] = useState('dashboard');
@@ -68,28 +68,12 @@ function App() {
         ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
         : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)'
     }}>
-      {token && (
-        <IconButton
-          sx={{ 
-            position: 'fixed', 
-            top: 16, 
-            right: 16, 
-            zIndex: 1000,
-            bgcolor: 'background.paper',
-            '&:hover': { bgcolor: 'action.hover' }
-          }}
-          onClick={toggleMode}
-          color="inherit"
-        >
-          {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-        </IconButton>
-      )}
       
       <Box sx={{ 
         flex: 1,
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
-        pb: token ? 8 : 0
+        pb: token ? 15 : 0
       }}>
         <Container maxWidth="sm" sx={{ py: 2 }}>
         {token ? (
