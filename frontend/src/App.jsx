@@ -72,7 +72,7 @@ function App() {
         <IconButton
           sx={{ 
             position: 'fixed', 
-            top: 'calc(16px + env(safe-area-inset-top))', 
+            top: 16, 
             right: 16, 
             zIndex: 1000,
             bgcolor: 'background.paper',
@@ -89,8 +89,7 @@ function App() {
         flex: 1,
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
-        pb: token ? 'calc(80px + env(safe-area-inset-bottom))' : 0,
-        pt: 'env(safe-area-inset-top)'
+        pb: token ? 12 : 0
       }}>
         <Container maxWidth="sm" sx={{ py: 2 }}>
         {token ? (

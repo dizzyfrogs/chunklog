@@ -14,7 +14,8 @@ function BottomNav({ activePage, setActivePage }) {
       left: 0, 
       right: 0, 
       zIndex: 1000,
-      paddingBottom: 'env(safe-area-inset-bottom)'
+      paddingBottom: 'calc(20px + env(safe-area-inset-bottom))',
+      paddingTop: '10px'
     }} elevation={3}>
       <BottomNavigation 
         value={activePage} 
