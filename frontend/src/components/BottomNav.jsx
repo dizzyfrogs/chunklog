@@ -8,7 +8,14 @@ function BottomNav({ activePage, setActivePage }) {
   };
 
   return (
-    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000 }} elevation={3}>
+    <Paper sx={{ 
+      position: 'fixed', 
+      bottom: 0, 
+      left: 0, 
+      right: 0, 
+      zIndex: 1000,
+      paddingBottom: 'env(safe-area-inset-bottom)'
+    }} elevation={3}>
       <BottomNavigation 
         value={activePage} 
         onChange={handleChange}
