@@ -15,6 +15,10 @@ app = FastAPI(title="ChunkLog API")
 allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "")
 origins = allowed_origins_str.split(",") if allowed_origins_str else []
 
+# If no specific origins are set, allow all origins
+if not origins or origins == [""]:
+    origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
