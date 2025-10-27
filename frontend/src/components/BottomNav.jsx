@@ -14,13 +14,17 @@ function BottomNav({ activePage, setActivePage }) {
       left: 0, 
       right: 0, 
       zIndex: 1000,
-      paddingBottom: 'calc(20px + env(safe-area-inset-bottom))',
-      paddingTop: '10px'
+      marginBottom: '20px',
+      backgroundColor: 'transparent'
     }} elevation={3}>
       <BottomNavigation 
         value={activePage} 
         onChange={handleChange}
         showLabels
+        sx={{
+          paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
+          backgroundColor: 'background.paper'
+        }}
       >
         <BottomNavigationAction label="Home" icon={<Home />} value="dashboard" />
         <BottomNavigationAction label="Weight" icon={<TrendingUp />} value="weight" />
