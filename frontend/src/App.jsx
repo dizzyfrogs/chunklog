@@ -89,7 +89,7 @@ function App() {
         flex: 1,
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
-        pb: token ? 10 : 0
+        pb: token ? 8 : 0
       }}>
         <Container maxWidth="sm" sx={{ py: 2 }}>
         {token ? (

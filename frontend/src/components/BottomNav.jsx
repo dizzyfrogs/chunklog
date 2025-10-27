@@ -8,23 +8,11 @@ function BottomNav({ activePage, setActivePage }) {
   };
 
   return (
-    <Paper sx={{ 
-      position: 'fixed', 
-      bottom: 0, 
-      left: 0, 
-      right: 0, 
-      zIndex: 1000,
-      marginBottom: '20px',
-      backgroundColor: 'transparent'
-    }} elevation={3}>
+    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000 }} elevation={3}>
       <BottomNavigation 
         value={activePage} 
         onChange={handleChange}
         showLabels
-        sx={{
-          paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
-          backgroundColor: 'background.paper'
-        }}
       >
         <BottomNavigationAction label="Home" icon={<Home />} value="dashboard" />
         <BottomNavigationAction label="Weight" icon={<TrendingUp />} value="weight" />
