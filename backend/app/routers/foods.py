@@ -4,6 +4,7 @@ from typing import List
 from .. import crud, schemas, models
 from ..database import get_db
 from ..core import security
+from ..services.usda_api import search_usda_foods
 
 router = APIRouter(
     prefix="/foods",
@@ -27,6 +28,53 @@ def read_foods(
 ):
     return crud.get_foods(db, user_id=current_user.id, skip=skip, limit=limit)
 
+@router.get("/search", response_model=List[schemas.FoodSearchResult])
+async def search_foods(
+    q: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(security.get_current_user),
+):
+    """
+    Search for foods in USDA database and user's library.
+    Returns USDA results first, followed by library results.
+    """
+    if not q or len(q.strip()) < 2:
+        return []
+    
+    results = []
+    
+    # Search USDA database
+    try:
+        usda_foods = await search_usda_foods(q.strip(), page_size=5)
+        for usda_food in usda_foods:
+            results.append(schemas.FoodSearchResult(
+                id=None,
+                name=usda_food.name,
+                calories=usda_food.calories,
+                protein=usda_food.protein,
+                carbs=usda_food.carbs,
+                fat=usda_food.fat,
+                is_from_library=False,
+                external_id=usda_food.external_id
+            ))
+    except Exception as e:
+        print(f"Error searching USDA database: {e}")
+    
+    # Search user's library
+    library_foods = crud.get_foods(db, user_id=current_user.id, search_term=q.strip())
+    for food in library_foods:
+        results.append(schemas.FoodSearchResult(
+            id=food.id,
+            name=food.name,
+            calories=food.calories,
+            protein=food.protein,
+            carbs=food.carbs,
+            fat=food.fat,
+            is_from_library=True,
+            external_id=None
+        ))
+    
+    return results
 
 @router.get("/{food_id}", response_model=schemas.FoodRead)
 def read_food(

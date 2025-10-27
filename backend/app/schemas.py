@@ -45,13 +45,24 @@ class FoodRead(FoodBase):
     class Config:
         orm_mode = True
 
+class FoodSearchResult(BaseModel):
+    id: Optional[int] = None
+    name: str
+    calories: float
+    protein: float
+    carbs: float
+    fat: float
+    is_from_library: bool
+    external_id: Optional[str] = None
+
 # Log schemas
 class FoodLogBase(BaseModel):
     log_date: date = Field(default_factory=date.today)
     servings: float = 1.0
 
 class FoodLogCreate(FoodLogBase):
-    food_id: int
+    food_id: Optional[int] = None
+    external_food: Optional[FoodCreate] = None
 
 class FoodLogRead(FoodLogBase):
     id: int

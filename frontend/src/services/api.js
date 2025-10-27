@@ -146,6 +146,10 @@ export const createFood = (foodData) => {
   return api.post('/foods/', foodData);
 };
 
+export const searchFoods = (query) => {
+  return api.get('/foods/search', { params: { q: query } });
+};
+
 // --- Food Log Functions ---
 export const getFoodLogs = (log_date) => {
   return api.get(`/foodlogs/?log_date=${log_date}`);

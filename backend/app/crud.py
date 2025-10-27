@@ -37,10 +37,14 @@ def get_food(db: Session, food_id: int, user_id: int):
         .first()
     )
 
-def get_foods(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+def get_foods(db: Session, user_id: int, skip: int = 0, limit: int = 100, search_term: str = None):
+    query = db.query(models.Food).filter(models.Food.owner_id == user_id)
+    
+    if search_term:
+        query = query.filter(models.Food.name.ilike(f"%{search_term}%"))
+    
     return (
-        db.query(models.Food)
-        .filter(models.Food.owner_id == user_id)
+        query
         .offset(skip)
         .limit(limit)
         .all()
