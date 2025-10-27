@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, IconButton, Button, Chip } from '@mui/material';
 import { ChevronLeft, ChevronRight, Delete } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 import Modal from '../components/Modal';
 import LogMealModal from '../components/LogMealModal';
 import FoodForm from '../components/FoodForm';
@@ -78,7 +79,7 @@ function FoodPage() {
         fetchLogForDate(currentDate);
       } catch (error) {
         console.error('Failed to delete food log', error);
-        alert('Failed to delete entry.');
+        toast.error('Failed to delete entry.');
       }
     }
   };

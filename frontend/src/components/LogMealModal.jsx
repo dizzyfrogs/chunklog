@@ -10,6 +10,7 @@ import {
   Divider
 } from '@mui/material';
 import { Search, Add } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 import { getFoods, logFood } from '../services/api';
 import Modal from './Modal';
 import FoodForm from './FoodForm';
@@ -43,7 +44,7 @@ function LogMealModal({ onMealLogged, selectedDate }) {
 
   const handleLogFood = async () => {
     if (!selectedFood) {
-      alert("Please select a food to log.");
+      toast.warning("Please select a food to log.");
       return;
     }
     try {
@@ -62,14 +63,14 @@ function LogMealModal({ onMealLogged, selectedDate }) {
       console.log('Logging food with payload:', payload);
       const response = await logFood(payload);
       console.log('Food logged successfully:', response.data);
-      alert(`${selectedFood.name} logged successfully!`);
+      toast.success(`${selectedFood.name} logged successfully!`);
       if (onMealLogged) {
         onMealLogged();
       }
     } catch (error) {
       console.error("Failed to log food", error);
       const errorMessage = error.response?.data?.detail || error.message || "Failed to log food.";
-      alert(`Failed to log food: ${errorMessage}`);
+      toast.error(`Failed to log food: ${errorMessage}`);
     }
   };
   

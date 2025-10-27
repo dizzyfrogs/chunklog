@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { toast } from 'react-toastify';
 import { logWeight } from '../services/api';
 
 const formatLocalDate = (date) => {
@@ -27,11 +28,11 @@ function WeightLog({ onWeightLogged }) {
       await logWeight({ weight: weightInKg, log_date: logDate });
       setWeight('');
       setLogDate(formatLocalDate(new Date()));
-      alert('Weight logged successfully!');
+      toast.success('Weight logged successfully!');
       if (onWeightLogged) onWeightLogged();
     } catch (error) {
       console.error("Failed to log weight", error);
-      alert('Failed to log weight.');
+      toast.error('Failed to log weight.');
     }
   };
 

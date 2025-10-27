@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box } from '@mui/material';
+import { toast } from 'react-toastify';
 import { createFood } from '../services/api';
 
 function FoodForm({ onFoodAdded }) {
@@ -27,12 +28,12 @@ function FoodForm({ onFoodAdded }) {
         fat: parseFloat(formData.fat) || 0,
       };
       await createFood(foodData);
-      alert(`${formData.name} added to your food library!`);
+      toast.success(`${formData.name} added to your food library!`);
       setFormData({ name: '', calories: '', protein: '', carbs: '', fat: '' });
       if (onFoodAdded) onFoodAdded();
     } catch (error) {
       console.error('Failed to create food:', error);
-      alert('Failed to add food.');
+      toast.error('Failed to add food.');
     }
   };
 

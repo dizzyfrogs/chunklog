@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, IconButton, Button, Chip, ToggleButton, ToggleButtonGroup, useTheme } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { getWeightLogs, deleteWeightLog } from '../services/api';
@@ -55,7 +56,7 @@ function WeightPage() {
         fetchLogs();
       } catch (error) {
         console.error('Failed to delete weight log', error);
-        alert('Failed to delete entry.');
+        toast.error('Failed to delete entry.');
       }
     }
   }

@@ -14,6 +14,7 @@ import {
   CircularProgress,
   Card
 } from '@mui/material';
+import { toast } from 'react-toastify';
 import { calculateGoal, setManualGoal, getWeightLogs } from '../services/api';
 
 function GoalForm({ currentGoal, onGoalSet }) {
@@ -62,12 +63,12 @@ function GoalForm({ currentGoal, onGoalSet }) {
         );
         response = await setManualGoal(payload);
       }
-      alert('Goal updated successfully!');
+      toast.success('Goal updated successfully!');
       onGoalSet(response.data);
     } catch (error) {
       const detail = error.response?.data?.detail || 'An unknown error occurred.';
       console.error('Failed to update goal:', detail);
-      alert(`Failed to update goal: ${detail}`);
+      toast.error(`Failed to update goal: ${detail}`);
     }
   };
 

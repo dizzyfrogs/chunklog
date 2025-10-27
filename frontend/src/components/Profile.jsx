@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Typography, MenuItem, Select, FormControl, InputLabel, ToggleButton, ToggleButtonGroup, CircularProgress, Card } from '@mui/material';
+import { toast } from 'react-toastify';
 import { getCurrentUser, updateUserProfile } from '../services/api';
 
 const genderOptions = [
@@ -61,11 +62,11 @@ function Profile({ onProfileUpdate }) {
       }
       const dataToSend = { ...formData, height_cm: heightInCm };
       await updateUserProfile(dataToSend);
-      alert('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
       if (onProfileUpdate) onProfileUpdate();
     } catch (error) {
       console.error('Failed to update profile', error);
-      alert('Failed to update profile.');
+      toast.error('Failed to update profile.');
     }
   };
 

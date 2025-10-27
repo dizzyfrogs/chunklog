@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Alert, Card, Typography } from '@mui/material';
+import { toast } from 'react-toastify';
 import { signupUser } from '../services/api';
 
 function Signup({ onSignupSuccess }) {
@@ -13,7 +14,7 @@ function Signup({ onSignupSuccess }) {
     setError('');
     try {
       await signupUser({ username, email, password });
-      alert('Signup successful! Please log in.');
+      toast.success('Signup successful! Please log in.');
       onSignupSuccess();
     } catch (err) {
       console.error('Signup failed:', err.response?.data?.detail);
